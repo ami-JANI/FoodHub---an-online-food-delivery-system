@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
 use App\Models\RestaurantUpdateRequest;
+use App\Models\Rider;
 use App\Models\User;
 
 class AdminDashboardController extends Controller
@@ -18,10 +19,11 @@ class AdminDashboardController extends Controller
         $pendingRestaurants = Restaurant::where('is_approved', false)->latest()->get();
         $pendingMenuItems = MenuItem::where('is_approved', false)->with('restaurant', 'category')->latest()->get();
         $pendingProfileUpdates = RestaurantUpdateRequest::where('status', 'pending')->with('restaurant')->latest()->get();
+        $pendingRiders = Rider::where('is_approved', false)->latest()->get();
 
         return view('admin.dashboard', compact(
             'restaurantCount', 'userCount', 'restaurants',
-            'pendingRestaurants', 'pendingMenuItems', 'pendingProfileUpdates'
+            'pendingRestaurants', 'pendingMenuItems', 'pendingProfileUpdates', 'pendingRiders'
         ));
     }
 }

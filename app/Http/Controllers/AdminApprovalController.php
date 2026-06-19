@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
 use App\Models\RestaurantUpdateRequest;
+use App\Models\Rider;
+use Illuminate\Http\Request;
 
 class AdminApprovalController extends Controller
 {
@@ -61,5 +63,26 @@ class AdminApprovalController extends Controller
         $updateRequest->update(['status' => 'rejected', 'reviewed_at' => now()]);
 
         return back()->with('status', 'Profile change request was rejected.');
+    }
+
+    public function approveRider(Request $request, Rider $rider)
+    {
+        $data = $request->validate([
+            'hourly_wage' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $rider->update([
+            'is_approved' => true,
+            'hourly_wage' => $data['hourly_wage'],
+        ]);
+
+        return back()->with('status', "{$rider->name} has been approved as a rider with an hourly wage of Tk {$data['hourly_wage']}.");
+    }
+
+    public function rejectRider(Rider $rider)
+    {
+        $rider->delete();
+
+        return back()->with('status', 'Rider application was rejected and removed.');
     }
 }

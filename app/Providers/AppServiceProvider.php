@@ -30,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
                 return route('restaurant.dashboard');
             }
 
+            if (Auth::guard('rider')->check()) {
+                return route('rider.dashboard');
+            }
+
             return route('home');
         });
     }

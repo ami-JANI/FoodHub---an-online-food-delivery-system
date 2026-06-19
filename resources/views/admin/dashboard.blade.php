@@ -119,6 +119,35 @@
         </div>
     @endif
 
+    @if ($pendingRiders->isNotEmpty())
+        <h2 class="text-lg font-bold mb-3">Pending rider applications</h2>
+        <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm divide-y divide-gray-100 dark:divide-gray-800 mb-8">
+            @foreach ($pendingRiders as $rider)
+                <div class="p-4 flex items-center justify-between gap-3 flex-wrap">
+                    <div class="min-w-0">
+                        <p class="font-semibold truncate">{{ $rider->name }} <span class="text-gray-400 dark:text-gray-500 font-normal">— {{ $rider->vehicle_type }}</span></p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $rider->phone }} &middot; {{ $rider->email }}</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500 truncate">Qualification: {{ $rider->educational_qualification }}</p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <form action="{{ route('admin.riders.approve', $rider) }}" method="POST" class="flex items-center gap-1.5">
+                            @csrf
+                            @method('PATCH')
+                            <input type="number" name="hourly_wage" step="0.01" min="0" placeholder="Tk/hr" required
+                                class="w-20 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-rose-800 focus:border-rose-800 transition">
+                            <button type="submit" class="text-xs font-semibold bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-full transition whitespace-nowrap">Approve</button>
+                        </form>
+                        <form action="{{ route('admin.riders.reject', $rider) }}" method="POST" onsubmit="return confirm('Reject and remove this rider application?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-xs font-semibold bg-red-50 dark:bg-red-900/30 hover:bg-red-100 text-red-700 dark:text-red-400 px-3 py-1.5 rounded-full transition">Reject</button>
+                        </form>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
     <h2 class="text-lg font-bold mb-3">Recently joined restaurants</h2>
     <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
         @forelse ($restaurants as $restaurant)

@@ -88,6 +88,7 @@ class CheckoutController extends Controller
             $order = Order::create([
                 'user_id' => $user->id,
                 'restaurant_id' => $restaurant->id,
+                'tracking_code' => Order::generateTrackingCode(),
                 'address_line' => $addressLine,
                 'phone' => $phone,
                 'latitude' => $latitude,
@@ -95,6 +96,7 @@ class CheckoutController extends Controller
                 'subtotal' => $total,
                 'delivery_fee' => $deliveryFee,
                 'total' => $total + $deliveryFee,
+                'status' => Order::PLACED,
             ]);
 
             foreach ($items as $row) {

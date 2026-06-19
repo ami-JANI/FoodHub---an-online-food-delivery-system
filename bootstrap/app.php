@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             $loginRoute = match ($e->guards()[0] ?? null) {
                 'restaurant' => 'restaurant.login',
                 'admin' => 'admin.login',
+                'rider' => 'rider.login',
                 default => 'login',
             };
 

@@ -2,17 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
 class RestaurantController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         [$userLat, $userLng] = $this->userLocation();
 
-        $restaurants = Restaurant::where('is_approved', true)->orderByDesc('rating')->get()
+        $search = trim((string) $request->query('q', ''));
+        $cuisine = $request->query('cuisine');
+        $menuCategory = $request->query('menu_category');
+        $sort = $request->query('sort', 'rating');
+
+        $query = Restaurant::where('is_approved', true);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('cuisine', 'like', "%{$search}%");
+            });
+        }
+
+        if ($cuisine) {
+            $query->where('cuisine', 'like', "%{$cuisine}%");
+        }
+
+        if ($menuCategory) {
+            $query->whereHas('categories', function ($q) use ($menuCategory) {
+                $q->where('name', $menuCategory);
+            });
+        }
+
+        $restaurants = $query->get()
             ->map(function (Restaurant $restaurant) use ($userLat, $userLng) {
                 $restaurant->distance_km = $restaurant->distanceFromKm($userLat, $userLng);
                 $restaurant->computed_delivery_fee = $restaurant->deliveryFeeFor($userLat, $userLng);
@@ -23,17 +49,40 @@ class RestaurantController extends Controller
         $hasLocation = $userLat !== null && $userLng !== null;
 
         if ($hasLocation) {
-            $restaurants = $restaurants
-                ->filter(fn (Restaurant $restaurant) => $restaurant->isWithinDeliveryRadius($userLat, $userLng))
-                ->sortBy('distance_km')
-                ->values();
+            $restaurants = $restaurants->filter(
+                fn (Restaurant $restaurant) => $restaurant->isWithinDeliveryRadius($userLat, $userLng)
+            );
         }
+
+        $restaurants = match ($sort) {
+            'distance' => $restaurants->sortBy('distance_km'),
+            'delivery_fee' => $restaurants->sortBy('computed_delivery_fee'),
+            default => $restaurants->sortByDesc('rating'),
+        };
+
+        $restaurants = $restaurants->values();
+
+        $cuisines = Restaurant::where('is_approved', true)
+            ->pluck('cuisine')
+            ->filter()
+            ->flatMap(fn ($value) => array_map('trim', explode(',', $value)))
+            ->unique()
+            ->sort()
+            ->values();
+
+        $menuCategories = Category::distinct()->orderBy('name')->pluck('name');
 
         return view('restaurants.index', [
             'restaurants' => $restaurants,
             'hasLocation' => $hasLocation,
             'userLat' => $userLat,
             'userLng' => $userLng,
+            'cuisines' => $cuisines,
+            'menuCategories' => $menuCategories,
+            'search' => $search,
+            'activeCuisine' => $cuisine,
+            'activeMenuCategory' => $menuCategory,
+            'sort' => $sort,
         ]);
     }
 

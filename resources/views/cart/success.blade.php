@@ -9,7 +9,8 @@
         <p class="text-gray-500 dark:text-gray-400 mb-6">Thanks for ordering from {{ $order->restaurant->name }}. Your food is on the way.</p>
 
         <div class="text-left bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-6">
-            <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Order #{{ $order->id }}</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Tracking code</p>
+            <p class="text-lg font-mono font-bold tracking-wider mb-3">{{ $order->tracking_code }}</p>
             <p class="text-sm text-gray-700 dark:text-gray-300 mb-1">📍 {{ $order->address_line }}</p>
             <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">📞 {{ $order->phone }}</p>
             <div class="space-y-1 border-t border-gray-200 dark:border-gray-700 pt-3">
@@ -26,8 +27,13 @@
             </div>
         </div>
 
-        <a href="{{ route('home') }}" class="bg-rose-950 hover:bg-rose-900 text-white font-semibold px-5 py-2.5 rounded-full inline-block transition">
-            Back to restaurants
-        </a>
+        <div class="flex items-center justify-center gap-3">
+            <a href="{{ route('track.show', $order->tracking_code) }}" class="bg-rose-950 hover:bg-rose-900 text-white font-semibold px-5 py-2.5 rounded-full inline-block transition">
+                Track this order
+            </a>
+            <a href="{{ route('home') }}" class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold px-5 py-2.5 rounded-full inline-block transition">
+                Back to restaurants
+            </a>
+        </div>
     </div>
 @endsection

@@ -54,6 +54,42 @@
         </div>
     </div>
 
+    <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-bold">Incoming orders</h2>
+    </div>
+    @if ($incomingOrders->isEmpty())
+        <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 text-center text-gray-500 dark:text-gray-400 mb-8">
+            No incoming orders right now.
+        </div>
+    @else
+        <div class="space-y-3 mb-8">
+            @foreach ($incomingOrders as $order)
+                <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 flex items-center justify-between gap-3 flex-wrap">
+                    <div class="min-w-0">
+                        <p class="font-semibold truncate">Order #{{ $order->id }} <span class="text-gray-400 dark:text-gray-500 font-normal font-mono text-xs">#{{ $order->tracking_code }}</span></p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $order->items->count() }} items &middot; Tk {{ number_format($order->total, 0) }}</p>
+                        <span class="text-xs font-semibold bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full">{{ $order->statusLabel() }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        @if ($order->status === \App\Models\Order::PLACED)
+                            <form action="{{ route('restaurant.orders.accept', $order) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="text-sm font-semibold bg-rose-950 hover:bg-rose-900 text-white px-3.5 py-2 rounded-full transition">Accept order</button>
+                            </form>
+                        @elseif ($order->status === \App\Models\Order::RESTAURANT_ACCEPTED)
+                            <form action="{{ route('restaurant.orders.preparing', $order) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="text-sm font-semibold bg-rose-950 hover:bg-rose-900 text-white px-3.5 py-2 rounded-full transition">Start preparing</button>
+                            </form>
+                        @elseif ($order->status === \App\Models\Order::PREPARING)
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ $order->rider ? 'Rider: ' . $order->rider->name : 'Waiting for a rider to accept pickup…' }}</span>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
     <div class="flex items-center justify-between mb-3 mt-6">
         <h2 class="text-lg font-bold">Menu</h2>
         <a href="{{ route('restaurant.menu-items.create') }}" class="text-sm font-semibold bg-rose-950 hover:bg-rose-900 text-white px-3.5 py-1.5 rounded-full transition">+ Add menu item</a>

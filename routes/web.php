@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\RestaurantAuthController;
+use App\Http\Controllers\Auth\RiderAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\LocationController;
@@ -13,7 +14,10 @@ use App\Http\Controllers\MenuItemDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\RestaurantDashboardController;
+use App\Http\Controllers\RestaurantOrderController;
 use App\Http\Controllers\RestaurantProfileController;
+use App\Http\Controllers\RiderDashboardController;
+use App\Http\Controllers\TrackOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [RestaurantController::class, 'index'])->name('home');
@@ -21,6 +25,11 @@ Route::get('/restaurants/{slug}', [RestaurantController::class, 'show'])->name('
 
 Route::post('/location', [LocationController::class, 'update'])->name('location.update');
 Route::delete('/location', [LocationController::class, 'clear'])->name('location.clear');
+
+Route::get('/track/{trackingCode}', [TrackOrderController::class, 'show'])->name('track.show');
+Route::get('/track/{trackingCode}/rider-location', [TrackOrderController::class, 'riderLocation'])->name('track.rider-location');
+Route::get('/track/{trackingCode}/messages', [TrackOrderController::class, 'messages'])->name('track.messages');
+Route::post('/track/{trackingCode}/messages', [TrackOrderController::class, 'postMessage'])->name('track.message');
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/{menuItem}/add', [CartController::class, 'add'])->name('cart.add');
@@ -49,6 +58,8 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/order/{order}/confirmation', [CheckoutController::class, 'success'])->name('cart.success');
+
+    Route::get('/track', [TrackOrderController::class, 'index'])->name('track.index');
 });
 
 // Restaurant (merchant) auth
@@ -71,6 +82,32 @@ Route::prefix('restaurant')->name('restaurant.')->group(function () {
 
         Route::get('/profile/edit', [RestaurantProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [RestaurantProfileController::class, 'update'])->name('profile.update');
+
+        Route::post('/orders/{order}/accept', [RestaurantOrderController::class, 'accept'])->name('orders.accept');
+        Route::post('/orders/{order}/preparing', [RestaurantOrderController::class, 'preparing'])->name('orders.preparing');
+    });
+});
+
+// Rider auth
+Route::prefix('rider')->name('rider.')->group(function () {
+    Route::middleware('guest:rider')->group(function () {
+        Route::get('/login', [RiderAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [RiderAuthController::class, 'login']);
+        Route::get('/register', [RiderAuthController::class, 'showRegister'])->name('register');
+        Route::post('/register', [RiderAuthController::class, 'register']);
+    });
+
+    Route::middleware('auth:rider')->group(function () {
+        Route::post('/logout', [RiderAuthController::class, 'logout'])->name('logout');
+        Route::get('/dashboard', [RiderDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/location', [RiderDashboardController::class, 'updateLocation'])->name('location.update');
+        Route::get('/orders/{order}', [RiderDashboardController::class, 'show'])->name('orders.show');
+        Route::post('/orders/{order}/accept', [RiderDashboardController::class, 'accept'])->name('orders.accept');
+        Route::post('/orders/{order}/arrived', [RiderDashboardController::class, 'arrived'])->name('orders.arrived');
+        Route::post('/orders/{order}/picked-up', [RiderDashboardController::class, 'pickedUp'])->name('orders.picked-up');
+        Route::post('/orders/{order}/on-the-way', [RiderDashboardController::class, 'onTheWay'])->name('orders.on-the-way');
+        Route::post('/orders/{order}/complete', [RiderDashboardController::class, 'complete'])->name('orders.complete');
+        Route::post('/orders/{order}/messages', [RiderDashboardController::class, 'postMessage'])->name('orders.message');
     });
 });
 
@@ -93,5 +130,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::patch('/profile-updates/{updateRequest}/approve', [AdminApprovalController::class, 'approveProfileUpdate'])->name('profile-updates.approve');
         Route::patch('/profile-updates/{updateRequest}/reject', [AdminApprovalController::class, 'rejectProfileUpdate'])->name('profile-updates.reject');
+
+        Route::patch('/riders/{rider}/approve', [AdminApprovalController::class, 'approveRider'])->name('riders.approve');
+        Route::delete('/riders/{rider}/reject', [AdminApprovalController::class, 'rejectRider'])->name('riders.reject');
     });
 });

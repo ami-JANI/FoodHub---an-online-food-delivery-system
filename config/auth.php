@@ -2,6 +2,7 @@
 
 use App\Models\Admin;
 use App\Models\Restaurant;
+use App\Models\Rider;
 use App\Models\User;
 
 return [
@@ -54,6 +55,11 @@ return [
             'driver' => 'session',
             'provider' => 'admins',
         ],
+
+        'rider' => [
+            'driver' => 'session',
+            'provider' => 'riders',
+        ],
     ],
 
     /*
@@ -87,6 +93,11 @@ return [
         'admins' => [
             'driver' => 'eloquent',
             'model' => Admin::class,
+        ],
+
+        'riders' => [
+            'driver' => 'eloquent',
+            'model' => Rider::class,
         ],
 
         // 'users' => [
