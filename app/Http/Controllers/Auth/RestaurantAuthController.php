@@ -46,6 +46,10 @@ class RestaurantAuthController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:restaurants,email'],
             'phone' => ['required', 'string', 'max:30'],
             'cuisine' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'address_line' => ['required', 'string', 'max:500'],
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
             'password' => ['required', 'confirmed', Password::min(8)],
         ]);
 
@@ -65,12 +69,18 @@ class RestaurantAuthController extends Controller
             'owner_name' => $data['owner_name'],
             'phone' => $data['phone'],
             'cuisine' => $data['cuisine'] ?? null,
+            'description' => $data['description'] ?? null,
+            'address_line' => $data['address_line'],
+            'latitude' => $data['latitude'],
+            'longitude' => $data['longitude'],
             'is_open' => true,
+            'is_approved' => false,
         ]);
 
         Auth::guard('restaurant')->login($restaurant);
 
-        return redirect()->route('restaurant.dashboard');
+        return redirect()->route('restaurant.dashboard')
+            ->with('status', 'Your restaurant has been submitted and is pending admin approval.');
     }
 
     public function logout(Request $request)

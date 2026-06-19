@@ -5,28 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class MenuItem extends Model
+class RestaurantUpdateRequest extends Model
 {
     protected $fillable = [
-        'restaurant_id', 'category_id', 'name', 'description',
-        'price', 'image', 'is_available', 'is_approved',
+        'restaurant_id', 'name', 'cuisine', 'description', 'address_line',
+        'latitude', 'longitude', 'logo', 'cover_image', 'status', 'reviewed_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_available' => 'boolean',
-            'is_approved' => 'boolean',
+            'latitude' => 'float',
+            'longitude' => 'float',
+            'reviewed_at' => 'datetime',
         ];
     }
 
     public function restaurant(): BelongsTo
     {
         return $this->belongsTo(Restaurant::class);
-    }
-
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
     }
 }

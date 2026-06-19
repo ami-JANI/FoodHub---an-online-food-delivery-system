@@ -29,7 +29,9 @@ class CartController extends Controller
         }
 
         $restaurant = $items[0]['menuItem']->restaurant ?? null;
-        $deliveryFee = $restaurant->delivery_fee ?? 0;
+        $deliveryFee = $restaurant
+            ? $restaurant->deliveryFeeFor(Session::get('user_lat'), Session::get('user_lng'))
+            : 0;
 
         return view('cart.index', [
             'items' => $items,
@@ -78,19 +80,6 @@ class CartController extends Controller
         Session::put('cart', $cart);
 
         return back();
-    }
-
-    public function checkout()
-    {
-        $cart = Session::get('cart', []);
-
-        if (empty($cart)) {
-            return redirect()->route('cart.index');
-        }
-
-        Session::forget('cart');
-
-        return view('cart.success');
     }
 
     private function cartRestaurantId(array $cart): ?int

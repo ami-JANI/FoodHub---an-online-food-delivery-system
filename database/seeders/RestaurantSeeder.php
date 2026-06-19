@@ -19,6 +19,8 @@ class RestaurantSeeder extends Seeder
                 'rating' => 4.5,
                 'delivery_time' => '30-40 min',
                 'delivery_fee' => 20,
+                'latitude' => 23.7461,
+                'longitude' => 90.3742,
                 'menu' => [
                     'Biryani' => [
                         ['name' => 'Kacchi Biryani (Mutton)', 'price' => 320, 'description' => 'Slow-cooked mutton biryani with fragrant rice.'],
@@ -36,6 +38,8 @@ class RestaurantSeeder extends Seeder
                 'rating' => 4.2,
                 'delivery_time' => '25-35 min',
                 'delivery_fee' => 25,
+                'latitude' => 23.7925,
+                'longitude' => 90.4078,
                 'menu' => [
                     'Pizza' => [
                         ['name' => 'Chicken Tikka Pizza (Medium)', 'price' => 450, 'description' => 'Loaded with spicy chicken tikka.'],
@@ -53,6 +57,8 @@ class RestaurantSeeder extends Seeder
                 'rating' => 4.7,
                 'delivery_time' => '20-30 min',
                 'delivery_fee' => 15,
+                'latitude' => 23.7651,
+                'longitude' => 90.3585,
                 'menu' => [
                     'Pasta' => [
                         ['name' => 'Chicken Alfredo Pasta', 'price' => 350, 'description' => 'Creamy alfredo sauce with grilled chicken.'],
@@ -70,6 +76,8 @@ class RestaurantSeeder extends Seeder
                 'rating' => 4.3,
                 'delivery_time' => '15-25 min',
                 'delivery_fee' => 10,
+                'latitude' => 23.7188,
+                'longitude' => 90.3879,
                 'menu' => [
                     'Snacks' => [
                         ['name' => 'Fuchka (10 pcs)', 'price' => 90, 'description' => 'Crispy puris with tangy tamarind water.'],
@@ -91,7 +99,10 @@ class RestaurantSeeder extends Seeder
                 'rating' => $r['rating'],
                 'delivery_time' => $r['delivery_time'],
                 'delivery_fee' => $r['delivery_fee'],
+                'latitude' => $r['latitude'],
+                'longitude' => $r['longitude'],
                 'is_open' => true,
+                'is_approved' => true,
             ]);
 
             $sort = 0;
@@ -110,6 +121,7 @@ class RestaurantSeeder extends Seeder
                         'description' => $item['description'],
                         'price' => $item['price'],
                         'is_available' => true,
+                        'is_approved' => true,
                     ]);
                 }
             }
