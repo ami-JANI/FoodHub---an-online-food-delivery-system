@@ -32,6 +32,8 @@ class RestaurantController extends Controller
         return view('restaurants.index', [
             'restaurants' => $restaurants,
             'hasLocation' => $hasLocation,
+            'userLat' => $userLat,
+            'userLng' => $userLng,
         ]);
     }
 

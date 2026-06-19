@@ -6,11 +6,82 @@
     <div class="bg-gradient-to-br from-stone-900 to-rose-950 rounded-2xl px-6 py-10 sm:px-10 sm:py-14 text-white mb-8 shadow-lg">
         <h1 class="text-2xl sm:text-3xl font-extrabold mb-2">Hungry? We've got you covered.</h1>
         <p class="text-stone-300 sm:text-lg mb-5">Order from {{ $restaurants->count() }} restaurants near you — delivered fast, fresh, and hot.</p>
-        <div class="flex items-center gap-2 bg-white rounded-full px-4 py-2.5 max-w-md shadow">
+        <button type="button" id="location-pill"
+            class="flex items-center gap-2 bg-white rounded-full px-4 py-2.5 max-w-md shadow text-left {{ $hasLocation ? '' : 'hover:bg-gray-50 transition' }}">
             <span class="text-gray-400">📍</span>
-            <span class="text-gray-500 text-sm">Dhaka, Bangladesh</span>
-        </div>
+            <span id="location-text" class="text-gray-500 text-sm">
+                {{ $hasLocation ? 'Detecting your location…' : 'Enter your location' }}
+            </span>
+        </button>
     </div>
+
+    <script>
+        (function () {
+            var textEl = document.getElementById('location-text');
+            var pill = document.getElementById('location-pill');
+            var hasLocation = @json($hasLocation);
+            var lat = @json($userLat);
+            var lng = @json($userLng);
+
+            function requestLocation() {
+                if (!navigator.geolocation) {
+                    textEl.textContent = 'Location not supported on this browser';
+                    return;
+                }
+
+                textEl.textContent = 'Requesting your location…';
+
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        fetch('{{ route('location.update') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            },
+                            body: JSON.stringify({
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude,
+                            }),
+                        }).then(function () {
+                            window.location.reload();
+                        });
+                    },
+                    function () {
+                        textEl.textContent = 'Location unavailable — tap to try again';
+                    },
+                    { enableHighAccuracy: true, timeout: 8000 }
+                );
+            }
+
+            if (hasLocation && lat !== null && lng !== null) {
+                var cacheKey = 'locationName:' + lat.toFixed(3) + ',' + lng.toFixed(3);
+                var cached = sessionStorage.getItem(cacheKey);
+
+                if (cached) {
+                    textEl.textContent = cached;
+                } else {
+                    fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&zoom=14&addressdetails=1')
+                        .then(function (response) { return response.json(); })
+                        .then(function (data) {
+                            var addr = data.address || {};
+                            var place = addr.suburb || addr.neighbourhood || addr.city_district
+                                || addr.city || addr.town || addr.village || 'Your current location';
+                            var area = addr.city || addr.town || addr.state || '';
+                            var label = (area && area !== place) ? (place + ', ' + area) : place;
+
+                            textEl.textContent = label;
+                            sessionStorage.setItem(cacheKey, label);
+                        })
+                        .catch(function () {
+                            textEl.textContent = 'Your current location';
+                        });
+                }
+            } else {
+                pill.addEventListener('click', requestLocation);
+            }
+        })();
+    </script>
 
     @unless ($hasLocation)
         <div class="flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 rounded-xl px-4 py-3 text-sm mb-6">
