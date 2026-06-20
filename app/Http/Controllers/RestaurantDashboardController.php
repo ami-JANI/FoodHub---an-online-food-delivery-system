@@ -9,7 +9,7 @@ class RestaurantDashboardController extends Controller
 {
     public function index()
     {
-        $restaurant = Auth::guard('restaurant')->user()->load('categories.menuItems');
+        $restaurant = Auth::guard('restaurant')->user()->load('categories.menuItems', 'messages');
         $pendingUpdateRequest = $restaurant->pendingUpdateRequest();
 
         $incomingOrders = Order::where('restaurant_id', $restaurant->id)

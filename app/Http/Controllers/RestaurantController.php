@@ -19,7 +19,7 @@ class RestaurantController extends Controller
         $menuCategory = $request->query('menu_category');
         $sort = $request->query('sort', 'rating');
 
-        $query = Restaurant::where('is_approved', true);
+        $query = Restaurant::where('is_approved', true)->where('is_removed_by_admin', false);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -63,6 +63,7 @@ class RestaurantController extends Controller
         $restaurants = $restaurants->values();
 
         $cuisines = Restaurant::where('is_approved', true)
+            ->where('is_removed_by_admin', false)
             ->pluck('cuisine')
             ->filter()
             ->flatMap(fn ($value) => array_map('trim', explode(',', $value)))
@@ -94,7 +95,7 @@ class RestaurantController extends Controller
             }])
             ->firstOrFail();
 
-        abort_unless($restaurant->is_approved, 404);
+        abort_unless($restaurant->is_approved && ! $restaurant->is_removed_by_admin, 404);
 
         [$userLat, $userLng] = $this->userLocation();
 

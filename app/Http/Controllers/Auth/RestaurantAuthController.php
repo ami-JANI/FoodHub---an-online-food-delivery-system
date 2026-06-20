@@ -50,6 +50,8 @@ class RestaurantAuthController extends Controller
             'address_line' => ['required', 'string', 'max:500'],
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'logo' => ['nullable', 'image', 'max:4096'],
+            'cover_image' => ['nullable', 'image', 'max:4096'],
             'password' => ['required', 'confirmed', Password::min(8)],
         ]);
 
@@ -73,6 +75,8 @@ class RestaurantAuthController extends Controller
             'address_line' => $data['address_line'],
             'latitude' => $data['latitude'],
             'longitude' => $data['longitude'],
+            'logo' => $request->hasFile('logo') ? $request->file('logo')->store('restaurants', 'uploads') : null,
+            'cover_image' => $request->hasFile('cover_image') ? $request->file('cover_image')->store('restaurants', 'uploads') : null,
             'is_open' => true,
             'is_approved' => false,
         ]);

@@ -14,6 +14,7 @@ use App\Http\Controllers\MenuItemDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\RestaurantDashboardController;
+use App\Http\Controllers\RestaurantMessageController;
 use App\Http\Controllers\RestaurantOrderController;
 use App\Http\Controllers\RestaurantProfileController;
 use App\Http\Controllers\RiderDashboardController;
@@ -85,6 +86,8 @@ Route::prefix('restaurant')->name('restaurant.')->group(function () {
 
         Route::post('/orders/{order}/accept', [RestaurantOrderController::class, 'accept'])->name('orders.accept');
         Route::post('/orders/{order}/preparing', [RestaurantOrderController::class, 'preparing'])->name('orders.preparing');
+
+        Route::post('/messages', [RestaurantMessageController::class, 'store'])->name('messages.store');
     });
 });
 
@@ -133,5 +136,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::patch('/riders/{rider}/approve', [AdminApprovalController::class, 'approveRider'])->name('riders.approve');
         Route::delete('/riders/{rider}/reject', [AdminApprovalController::class, 'rejectRider'])->name('riders.reject');
+
+        Route::patch('/restaurants/{restaurant}/remove', [AdminApprovalController::class, 'removeRestaurant'])->name('restaurants.remove');
+        Route::patch('/restaurants/{restaurant}/restore', [AdminApprovalController::class, 'restoreRestaurant'])->name('restaurants.restore');
+
+        Route::patch('/restaurant-messages/{message}/resolve', [AdminApprovalController::class, 'resolveRestaurantMessage'])->name('restaurant-messages.resolve');
     });
 });

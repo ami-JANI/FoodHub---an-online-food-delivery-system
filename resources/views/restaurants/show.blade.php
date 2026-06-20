@@ -15,23 +15,36 @@
         </div>
     @endif
 
-    <div class="mt-4 mb-8 bg-gradient-to-br from-stone-900 to-rose-950 rounded-2xl px-6 py-8 text-white shadow-lg">
-        <div class="flex items-start justify-between gap-3">
-            <div>
-                <h1 class="text-2xl sm:text-3xl font-extrabold">{{ $restaurant->name }}</h1>
-                <p class="text-stone-300 mt-1">{{ $restaurant->cuisine }}</p>
-            </div>
-            <span class="shrink-0 text-sm font-semibold {{ $restaurant->is_open ? 'bg-white text-green-700' : 'bg-white/80 text-gray-600' }} px-3 py-1 rounded-full">
-                {{ $restaurant->is_open ? 'Open now' : 'Closed' }}
-            </span>
-        </div>
-        <div class="flex items-center gap-4 text-sm mt-4 text-stone-300">
-            <span class="flex items-center gap-1">★ {{ $restaurant->rating }}</span>
-            <span class="flex items-center gap-1">⏱ {{ $restaurant->delivery_time }}</span>
-            <span class="flex items-center gap-1">🚲 Tk {{ number_format($restaurant->computed_delivery_fee, 0) }} delivery</span>
-            @if ($restaurant->distance_km !== null)
-                <span class="flex items-center gap-1">📍 {{ number_format($restaurant->distance_km, 1) }} km away</span>
+    <div class="mt-4 mb-8 rounded-2xl text-white shadow-lg relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-stone-900 to-rose-950">
+            @if ($restaurant->cover_image)
+                <img src="{{ asset('uploads/' . $restaurant->cover_image) }}" alt="{{ $restaurant->name }} banner" class="w-full h-full object-cover opacity-50">
             @endif
+        </div>
+        <div class="relative px-6 py-8">
+            <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-4">
+                    @if ($restaurant->logo)
+                        <img src="{{ asset('uploads/' . $restaurant->logo) }}" alt="{{ $restaurant->name }} logo"
+                             class="w-16 h-16 rounded-full object-cover border-2 border-white shadow shrink-0">
+                    @endif
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold">{{ $restaurant->name }}</h1>
+                        <p class="text-stone-300 mt-1">{{ $restaurant->cuisine }}</p>
+                    </div>
+                </div>
+                <span class="shrink-0 text-sm font-semibold {{ $restaurant->is_open ? 'bg-white text-green-700' : 'bg-white/80 text-gray-600' }} px-3 py-1 rounded-full">
+                    {{ $restaurant->is_open ? 'Open now' : 'Closed' }}
+                </span>
+            </div>
+            <div class="flex items-center gap-4 text-sm mt-4 text-stone-300">
+                <span class="flex items-center gap-1">★ {{ $restaurant->rating }}</span>
+                <span class="flex items-center gap-1">⏱ {{ $restaurant->delivery_time }}</span>
+                <span class="flex items-center gap-1">🚲 Tk {{ number_format($restaurant->computed_delivery_fee, 0) }} delivery</span>
+                @if ($restaurant->distance_km !== null)
+                    <span class="flex items-center gap-1">📍 {{ number_format($restaurant->distance_km, 1) }} km away</span>
+                @endif
+            </div>
         </div>
     </div>
 

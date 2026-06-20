@@ -11,6 +11,33 @@
 @endsection
 
 @section('content')
+    @if ($restaurant->is_removed_by_admin)
+        <div class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-xl px-4 py-4 text-sm">
+            <div class="flex items-start gap-3 mb-3">
+                <span class="text-lg shrink-0">🚫</span>
+                <p class="font-semibold">Your restaurant is no longer listed on the app. Contact the authority if you believe this is a mistake.</p>
+            </div>
+
+            <form action="{{ route('restaurant.messages.store') }}" method="POST" class="flex items-start gap-2">
+                @csrf
+                <textarea name="body" rows="2" required placeholder="Write a message to the FoodHub team…"
+                    class="flex-1 border border-red-200 dark:border-red-800 dark:bg-gray-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 transition"></textarea>
+                <button type="submit" class="text-sm font-semibold bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-full transition whitespace-nowrap">Send message</button>
+            </form>
+
+            @if ($restaurant->messages->isNotEmpty())
+                <div class="mt-3 pt-3 border-t border-red-200 dark:border-red-800 space-y-1.5">
+                    @foreach ($restaurant->messages as $message)
+                        <p class="text-xs text-red-700 dark:text-red-400">
+                            <span class="font-semibold">{{ $message->status === 'resolved' ? '✓ Resolved' : 'Sent' }}</span>
+                            &middot; {{ $message->created_at->diffForHumans() }}: {{ $message->body }}
+                        </p>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+    @endif
+
     @unless ($restaurant->is_approved)
         <div class="mb-6 flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 rounded-xl px-4 py-3 text-sm">
             <span class="text-lg shrink-0">⏳</span>

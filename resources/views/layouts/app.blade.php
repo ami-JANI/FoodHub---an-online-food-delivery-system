@@ -21,19 +21,17 @@
 
     {{-- Row 1: utility bar — scrolls away (not sticky) --}}
     <div class="bg-stone-900 text-stone-300 text-xs sm:text-sm">
-        <div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between gap-4">
+        <div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2 sm:gap-4">
             <button type="button" id="location-pill" class="flex items-center gap-1.5 hover:text-white transition min-w-0 {{ $hasLocation ? '' : 'cursor-pointer' }}">
                 <span class="shrink-0">📍</span>
-                <span id="location-text" class="truncate max-w-[40vw] sm:max-w-xs">
+                <span id="location-text" class="truncate max-w-[32vw] sm:max-w-xs">
                     {{ $hasLocation ? 'Detecting your location…' : 'Enter your location' }}
                 </span>
                 <span class="shrink-0">▾</span>
             </button>
-            <div class="flex items-center gap-3 sm:gap-5 shrink-0">
-                <a href="{{ route('track.index') }}" class="hidden sm:inline hover:text-white transition">Track Order</a>
-                <a href="#" class="hidden sm:inline hover:text-white transition">Help</a>
-                <span class="hidden sm:inline">🇧🇩 En</span>
-                <span class="w-px h-4 bg-stone-700 hidden sm:inline"></span>
+            <div class="flex items-center gap-3 shrink-0">
+                <a href="{{ route('track.index') }}" class="hover:text-white transition whitespace-nowrap">Track Order</a>
+                <span class="w-px h-4 bg-stone-700"></span>
                 @include('partials.theme-toggle', ['class' => 'hover:text-white transition text-base leading-none w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10'])
             </div>
         </div>

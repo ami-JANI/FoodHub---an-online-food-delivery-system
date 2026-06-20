@@ -18,7 +18,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('restaurant.register') }}" class="space-y-3">
+    <form method="POST" action="{{ route('restaurant.register') }}" enctype="multipart/form-data" class="space-y-3">
         @csrf
         <div>
             <label class="text-sm font-medium">Restaurant name</label>
@@ -57,6 +57,17 @@
         </div>
 
         @include('partials.map-picker', ['mapId' => 'restaurant-register-map'])
+
+        <div>
+            <label class="text-sm font-medium">Profile picture (logo)</label>
+            <input type="file" name="logo" accept="image/*"
+                class="w-full mt-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-800 focus:border-rose-800 transition">
+        </div>
+        <div>
+            <label class="text-sm font-medium">Cover photo (banner)</label>
+            <input type="file" name="cover_image" accept="image/*"
+                class="w-full mt-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-800 focus:border-rose-800 transition">
+        </div>
 
         <div>
             <label class="text-sm font-medium">Password</label>

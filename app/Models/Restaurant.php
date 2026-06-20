@@ -17,7 +17,7 @@ class Restaurant extends Authenticatable
     protected $fillable = [
         'name', 'slug', 'email', 'password', 'owner_name', 'phone',
         'cuisine', 'description', 'address_line', 'logo', 'cover_image', 'latitude', 'longitude',
-        'rating', 'delivery_time', 'delivery_fee', 'is_open', 'is_approved',
+        'rating', 'delivery_time', 'delivery_fee', 'is_open', 'is_approved', 'is_removed_by_admin',
     ];
 
     protected $hidden = [
@@ -31,6 +31,7 @@ class Restaurant extends Authenticatable
             'latitude' => 'float',
             'longitude' => 'float',
             'is_approved' => 'boolean',
+            'is_removed_by_admin' => 'boolean',
         ];
     }
 
@@ -52,6 +53,11 @@ class Restaurant extends Authenticatable
     public function pendingUpdateRequest(): ?RestaurantUpdateRequest
     {
         return $this->updateRequests()->where('status', 'pending')->first();
+    }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(RestaurantMessage::class)->latest();
     }
 
     /**

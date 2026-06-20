@@ -68,8 +68,12 @@
                                 <span class="text-sm font-semibold bg-white text-gray-900 px-3 py-1 rounded-full">Closed</span>
                             </div>
                         @endunless
+                        @if ($restaurant->logo)
+                            <img src="{{ asset('uploads/' . $restaurant->logo) }}" alt="{{ $restaurant->name }} logo"
+                                 class="absolute -bottom-5 left-4 w-12 h-12 rounded-full object-cover border-2 border-white dark:border-gray-900 shadow">
+                        @endif
                     </div>
-                    <div class="p-4">
+                    <div class="p-4 {{ $restaurant->logo ? 'pt-6' : '' }}">
                         <div class="flex items-center justify-between gap-2">
                             <h3 class="font-bold text-lg group-hover:text-rose-800 dark:group-hover:text-rose-400 transition truncate">{{ $restaurant->name }}</h3>
                             <span class="shrink-0 text-sm bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-md font-semibold">★ {{ $restaurant->rating }}</span>

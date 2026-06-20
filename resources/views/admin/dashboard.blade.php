@@ -148,17 +148,53 @@
         </div>
     @endif
 
+    @if ($openRestaurantMessages->isNotEmpty())
+        <h2 class="text-lg font-bold mb-3">Restaurant messages</h2>
+        <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm divide-y divide-gray-100 dark:divide-gray-800 mb-8">
+            @foreach ($openRestaurantMessages as $message)
+                <div class="p-4 flex items-center justify-between gap-3 flex-wrap">
+                    <div class="min-w-0">
+                        <p class="font-semibold truncate">{{ $message->restaurant->name }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">{{ $message->body }}</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ $message->created_at->diffForHumans() }}</p>
+                    </div>
+                    <form action="{{ route('admin.restaurant-messages.resolve', $message) }}" method="POST" class="shrink-0">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" class="text-xs font-semibold bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-full transition">Mark resolved</button>
+                    </form>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
     <h2 class="text-lg font-bold mb-3">Recently joined restaurants</h2>
     <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
         @forelse ($restaurants as $restaurant)
-            <div class="p-4 flex items-center justify-between gap-3">
+            <div class="p-4 flex items-center justify-between gap-3 flex-wrap">
                 <div class="min-w-0">
                     <p class="font-semibold truncate">{{ $restaurant->name }}</p>
                     <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $restaurant->cuisine }} &middot; {{ $restaurant->email }}</p>
                 </div>
-                <span class="shrink-0 text-xs font-semibold {{ $restaurant->is_open ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400' }} px-2.5 py-1 rounded-full">
-                    {{ $restaurant->is_open ? 'Open' : 'Closed' }}
-                </span>
+                <div class="flex items-center gap-2 shrink-0">
+                    @if ($restaurant->is_removed_by_admin)
+                        <span class="text-xs font-semibold bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-2.5 py-1 rounded-full">Removed</span>
+                        <form action="{{ route('admin.restaurants.restore', $restaurant) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="text-xs font-semibold bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-full transition">Restore</button>
+                        </form>
+                    @else
+                        <span class="text-xs font-semibold {{ $restaurant->is_open ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400' }} px-2.5 py-1 rounded-full">
+                            {{ $restaurant->is_open ? 'Open' : 'Closed' }}
+                        </span>
+                        <form action="{{ route('admin.restaurants.remove', $restaurant) }}" method="POST" onsubmit="return confirm('Remove {{ $restaurant->name }} from the app? The owner will still be able to sign in and contact you.')">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="text-xs font-semibold bg-red-50 dark:bg-red-900/30 hover:bg-red-100 text-red-700 dark:text-red-400 px-3 py-1.5 rounded-full transition">Delete</button>
+                        </form>
+                    @endif
+                </div>
             </div>
         @empty
             <p class="p-4 text-gray-500 dark:text-gray-400 text-sm">No restaurants yet.</p>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MenuItem;
 use App\Models\Restaurant;
+use App\Models\RestaurantMessage;
 use App\Models\RestaurantUpdateRequest;
 use App\Models\Rider;
 use Illuminate\Http\Request;
@@ -22,6 +23,27 @@ class AdminApprovalController extends Controller
         $restaurant->delete();
 
         return back()->with('status', 'Restaurant registration was rejected and removed.');
+    }
+
+    public function removeRestaurant(Restaurant $restaurant)
+    {
+        $restaurant->update(['is_removed_by_admin' => true]);
+
+        return back()->with('status', "{$restaurant->name} has been removed from the app. The owner can still sign in to their dashboard.");
+    }
+
+    public function restoreRestaurant(Restaurant $restaurant)
+    {
+        $restaurant->update(['is_removed_by_admin' => false]);
+
+        return back()->with('status', "{$restaurant->name} has been restored and is visible to customers again.");
+    }
+
+    public function resolveRestaurantMessage(RestaurantMessage $message)
+    {
+        $message->update(['status' => 'resolved']);
+
+        return back()->with('status', 'Message marked as resolved.');
     }
 
     public function approveMenuItem(MenuItem $menuItem)
