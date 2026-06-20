@@ -14,6 +14,7 @@ use App\Http\Controllers\MenuItemDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\RestaurantDashboardController;
+use App\Http\Controllers\RestaurantHoursController;
 use App\Http\Controllers\RestaurantMessageController;
 use App\Http\Controllers\RestaurantOrderController;
 use App\Http\Controllers\RestaurantProfileController;
@@ -88,6 +89,9 @@ Route::prefix('restaurant')->name('restaurant.')->group(function () {
         Route::post('/orders/{order}/preparing', [RestaurantOrderController::class, 'preparing'])->name('orders.preparing');
 
         Route::post('/messages', [RestaurantMessageController::class, 'store'])->name('messages.store');
+
+        Route::put('/hours', [RestaurantHoursController::class, 'update'])->name('hours.update');
+        Route::post('/toggle-closed', [RestaurantHoursController::class, 'toggleClosed'])->name('toggle-closed');
     });
 });
 

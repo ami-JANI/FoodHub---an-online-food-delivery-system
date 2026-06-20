@@ -93,6 +93,6 @@ class RestaurantAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('restaurant.login');
+        return redirect()->route('home');
     }
 }

@@ -43,6 +43,10 @@ class CartController extends Controller
 
     public function add(Request $request, MenuItem $menuItem)
     {
+        if (! $menuItem->restaurant->isCurrentlyOpen()) {
+            return back()->withErrors(['cart' => 'This restaurant is currently unavailable, so this item cannot be added to your cart.']);
+        }
+
         $cart = Session::get('cart', []);
 
         $currentRestaurantId = $this->cartRestaurantId($cart);

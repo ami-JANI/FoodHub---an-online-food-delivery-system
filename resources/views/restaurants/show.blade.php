@@ -3,7 +3,23 @@
 @section('title', $restaurant->name . ' - FoodHub')
 
 @section('content')
+    @php($open = $restaurant->isCurrentlyOpen())
+
     <a href="{{ route('home') }}" class="text-sm text-gray-500 dark:text-gray-400 hover:text-rose-800 dark:hover:text-rose-400 transition inline-flex items-center gap-1">&larr; All restaurants</a>
+
+    @unless ($open)
+        <div class="mt-4 flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 rounded-xl px-4 py-3 text-sm">
+            <span class="text-lg shrink-0">🚫</span>
+            <p>This restaurant is currently unavailable. You can browse the menu, but ordering is disabled until it reopens.</p>
+        </div>
+    @endunless
+
+    @error('cart')
+        <div class="mt-4 flex items-start gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-xl px-4 py-3 text-sm">
+            <span class="text-lg shrink-0">⚠️</span>
+            <p>{{ $message }}</p>
+        </div>
+    @enderror
 
     @if ($cartConflict)
         <div class="mt-4 flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 rounded-xl px-4 py-3 text-sm">
@@ -33,8 +49,8 @@
                         <p class="text-stone-300 mt-1">{{ $restaurant->cuisine }}</p>
                     </div>
                 </div>
-                <span class="shrink-0 text-sm font-semibold {{ $restaurant->is_open ? 'bg-white text-green-700' : 'bg-white/80 text-gray-600' }} px-3 py-1 rounded-full">
-                    {{ $restaurant->is_open ? 'Open now' : 'Closed' }}
+                <span class="shrink-0 text-sm font-semibold {{ $open ? 'bg-white text-green-700' : 'bg-white/80 text-gray-600' }} px-3 py-1 rounded-full">
+                    {{ $open ? 'Open now' : 'Currently unavailable' }}
                 </span>
             </div>
             <div class="flex items-center gap-4 text-sm mt-4 text-stone-300">
@@ -77,7 +93,7 @@
                         <p class="text-sm font-bold mt-1 text-gray-800 dark:text-gray-200">Tk {{ number_format($item->price, 0) }}</p>
                     </div>
                     <form action="{{ route('cart.add', $item->id) }}" method="POST"
-                        @class(['shrink-0', 'cart-conflict-form' => $cartConflict])
+                        @class(['shrink-0', 'cart-conflict-form' => $cartConflict, 'closed-restaurant-form' => ! $open])
                         @if ($cartConflict)
                             data-conflict-restaurant="{{ $cartConflict->name }}"
                             data-target-restaurant="{{ $restaurant->name }}"
@@ -85,7 +101,7 @@
                     >
                         @csrf
                         <button type="submit"
-                            class="bg-rose-950 group-hover:bg-rose-900 text-white text-sm font-semibold px-3.5 py-2 rounded-full whitespace-nowrap transition">
+                            class="text-white text-sm font-semibold px-3.5 py-2 rounded-full whitespace-nowrap transition {{ $open ? 'bg-rose-950 group-hover:bg-rose-900' : 'bg-gray-400 cursor-not-allowed' }}">
                             + Add
                         </button>
                     </form>
@@ -109,4 +125,15 @@
             });
         </script>
     @endif
+
+    @unless ($open)
+        <script>
+            document.querySelectorAll('.closed-restaurant-form').forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    alert('This restaurant is currently unavailable, so you cannot add items to your cart right now.');
+                });
+            });
+        </script>
+    @endunless
 @endsection

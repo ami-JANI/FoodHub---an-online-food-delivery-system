@@ -103,6 +103,8 @@ class RestaurantSeeder extends Seeder
                 'longitude' => $r['longitude'],
                 'is_open' => true,
                 'is_approved' => true,
+                'opening_time' => '10:00:00',
+                'closing_time' => '23:00:00',
             ]);
 
             $sort = 0;

@@ -18,6 +18,7 @@ class Restaurant extends Authenticatable
         'name', 'slug', 'email', 'password', 'owner_name', 'phone',
         'cuisine', 'description', 'address_line', 'logo', 'cover_image', 'latitude', 'longitude',
         'rating', 'delivery_time', 'delivery_fee', 'is_open', 'is_approved', 'is_removed_by_admin',
+        'opening_time', 'closing_time', 'is_manually_closed',
     ];
 
     protected $hidden = [
@@ -32,6 +33,7 @@ class Restaurant extends Authenticatable
             'longitude' => 'float',
             'is_approved' => 'boolean',
             'is_removed_by_admin' => 'boolean',
+            'is_manually_closed' => 'boolean',
         ];
     }
 
@@ -100,5 +102,32 @@ class Restaurant extends Authenticatable
         $distance = $this->distanceFromKm($lat, $lng);
 
         return $distance === null || $distance <= self::VISIBILITY_RADIUS_KM;
+    }
+
+    /**
+     * Whether the restaurant is open right now: manual closure always wins,
+     * otherwise based on opening/closing hours (open all day if unset).
+     */
+    public function isCurrentlyOpen(): bool
+    {
+        if ($this->is_manually_closed) {
+            return false;
+        }
+
+        if (! $this->opening_time || ! $this->closing_time) {
+            return true;
+        }
+
+        // Restaurant hours are entered in Bangladesh local time, regardless of the app's UTC clock.
+        $now = now('Asia/Dhaka')->format('H:i:s');
+        $opens = $this->opening_time;
+        $closes = $this->closing_time;
+
+        if ($opens <= $closes) {
+            return $now >= $opens && $now <= $closes;
+        }
+
+        // Overnight hours, e.g. 18:00–02:00.
+        return $now >= $opens || $now <= $closes;
     }
 }

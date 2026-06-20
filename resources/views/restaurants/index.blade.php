@@ -15,16 +15,12 @@
             </div>
         </div>
 
-        @foreach ($cuisines as $c)
+        @foreach ($cuisines->take(5) as $c)
             <a href="{{ route('home', $activeCuisine === $c ? request()->except('cuisine') : array_merge(request()->except('cuisine'), ['cuisine' => $c])) }}"
                class="shrink-0 text-sm font-medium rounded-full px-3.5 py-1.5 transition whitespace-nowrap {{ $activeCuisine === $c ? 'bg-rose-950 text-white' : 'border border-gray-200 dark:border-gray-700 hover:border-rose-400' }}">
                 {{ $c }}
             </a>
         @endforeach
-
-        <span class="ml-auto pl-4 text-sm text-gray-400 dark:text-gray-500 shrink-0 whitespace-nowrap">
-            {{ $hasLocation ? 'Showing restaurants within 5km' : 'Showing all restaurants' }}
-        </span>
     </div>
 @endsection
 
@@ -55,17 +51,18 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             @php($gradients = ['from-stone-200 to-rose-100', 'from-amber-100 to-stone-200', 'from-rose-100 to-stone-200', 'from-stone-200 to-amber-100'])
             @foreach ($restaurants as $restaurant)
+                @php($open = $restaurant->isCurrentlyOpen())
                 <a href="{{ route('restaurants.show', $restaurant->slug) }}"
-                   class="group block bg-white dark:bg-gray-900 rounded-2xl shadow-sm hover:shadow-xl transition-all hover:-translate-y-0.5 overflow-hidden border border-gray-100 dark:border-gray-800">
+                   class="group block bg-white dark:bg-gray-900 rounded-2xl shadow-sm hover:shadow-xl transition-all hover:-translate-y-0.5 overflow-hidden border border-gray-100 dark:border-gray-800 {{ $open ? '' : 'opacity-60' }}">
                     <div class="h-36 bg-gradient-to-br {{ $gradients[$loop->index % count($gradients)] }} flex items-center justify-center text-stone-500 text-4xl relative overflow-hidden">
                         @if ($restaurant->cover_image)
                             <img src="{{ asset('uploads/' . $restaurant->cover_image) }}" alt="{{ $restaurant->name }}" class="absolute inset-0 w-full h-full object-cover">
                         @else
                             🍽️
                         @endif
-                        @unless ($restaurant->is_open)
+                        @unless ($open)
                             <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                <span class="text-sm font-semibold bg-white text-gray-900 px-3 py-1 rounded-full">Closed</span>
+                                <span class="text-sm font-semibold bg-white text-gray-900 px-3 py-1 rounded-full">Currently unavailable</span>
                             </div>
                         @endunless
                         @if ($restaurant->logo)

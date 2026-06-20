@@ -61,9 +61,39 @@
             @endif
         </div>
         <div>
-            <h1 class="text-2xl font-bold">{{ $restaurant->name }}</h1>
+            <h1 class="text-2xl font-bold flex items-center gap-2">
+                {{ $restaurant->name }}
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $restaurant->isCurrentlyOpen() ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400' }}">
+                    {{ $restaurant->isCurrentlyOpen() ? 'Open' : 'Closed' }}
+                </span>
+            </h1>
             <p class="text-gray-500 dark:text-gray-400 text-sm">Owner: {{ $restaurant->owner_name }} &middot; {{ $restaurant->email }}</p>
         </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 mb-8 flex items-center justify-between gap-4 flex-wrap">
+        <form action="{{ route('restaurant.hours.update') }}" method="POST" class="flex items-end gap-3 flex-wrap">
+            @csrf
+            @method('PUT')
+            <div>
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Opening time</label>
+                <input type="time" name="opening_time" value="{{ substr($restaurant->opening_time ?? '10:00', 0, 5) }}" required
+                    class="block mt-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-800 focus:border-rose-800 transition">
+            </div>
+            <div>
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Closing time</label>
+                <input type="time" name="closing_time" value="{{ substr($restaurant->closing_time ?? '22:00', 0, 5) }}" required
+                    class="block mt-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-800 focus:border-rose-800 transition">
+            </div>
+            <button type="submit" class="text-sm font-semibold bg-rose-950 hover:bg-rose-900 text-white px-3.5 py-2 rounded-full transition">Save hours</button>
+        </form>
+
+        <form action="{{ route('restaurant.toggle-closed') }}" method="POST">
+            @csrf
+            <button type="submit" class="text-sm font-semibold px-4 py-2 rounded-full transition {{ $restaurant->is_manually_closed ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-red-50 dark:bg-red-900/30 hover:bg-red-100 text-red-700 dark:text-red-400' }}">
+                {{ $restaurant->is_manually_closed ? 'Reopen restaurant' : 'Close restaurant now' }}
+            </button>
+        </form>
     </div>
 
     <div class="grid sm:grid-cols-3 gap-4 mb-8">
