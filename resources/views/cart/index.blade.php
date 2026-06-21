@@ -5,6 +5,13 @@
 @section('content')
     <h1 class="text-2xl font-bold mb-6">Your Cart</h1>
 
+    @error('cart')
+        <div class="mb-4 flex items-start gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-xl px-4 py-3 text-sm">
+            <span class="text-lg shrink-0">⚠️</span>
+            <p>{{ $message }}</p>
+        </div>
+    @enderror
+
     @if (empty($items))
         <div class="text-center bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm py-16 px-6">
             <div class="text-5xl mb-4">🛒</div>
@@ -68,6 +75,10 @@
                         <span>Total</span>
                         <span>Tk {{ number_format($total + $deliveryFee, 0) }}</span>
                     </div>
+
+                    @if ($restaurant && $total < $restaurant->minimum_order)
+                        <p class="text-xs text-amber-600 dark:text-amber-400 mt-3">Add Tk {{ number_format($restaurant->minimum_order - $total, 0) }} more to reach the Tk {{ number_format($restaurant->minimum_order, 0) }} minimum order.</p>
+                    @endif
 
                     <a href="{{ route('checkout.index') }}" class="block mt-5 w-full text-center bg-rose-950 hover:bg-rose-900 text-white font-semibold py-2.5 rounded-full transition">
                         Proceed to Checkout

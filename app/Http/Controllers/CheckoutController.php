@@ -19,6 +19,12 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index');
         }
 
+        if ($total < $restaurant->minimum_order) {
+            return redirect()->route('cart.index')->withErrors([
+                'cart' => 'This restaurant requires a minimum order of Tk '.number_format($restaurant->minimum_order, 0).'. Add more items to checkout.',
+            ]);
+        }
+
         $user = Auth::guard('web')->user();
         $previewAddress = $user->addresses->firstWhere('is_default', true) ?? $user->addresses->first();
 
@@ -41,6 +47,12 @@ class CheckoutController extends Controller
 
         if (empty($items) || ! $restaurant) {
             return redirect()->route('cart.index');
+        }
+
+        if ($total < $restaurant->minimum_order) {
+            return redirect()->route('cart.index')->withErrors([
+                'cart' => 'This restaurant requires a minimum order of Tk '.number_format($restaurant->minimum_order, 0).'. Add more items to checkout.',
+            ]);
         }
 
         $user = Auth::guard('web')->user();
