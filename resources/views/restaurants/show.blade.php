@@ -192,6 +192,38 @@
         </script>
     @endif
 
+    <script>
+        (function () {
+            var btn = document.getElementById('favorite-btn');
+            if (!btn) return;
+
+            btn.addEventListener('click', function () {
+                fetch('{{ route('favorites.toggle', $restaurant->id) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                })
+                    .then(function (response) {
+                        if (response.status === 401) {
+                            window.location.href = '{{ route('login') }}';
+                            return null;
+                        }
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        if (!data) return;
+                        btn.textContent = data.favorited ? '❤️' : '🤍';
+                        btn.classList.toggle('text-rose-400', data.favorited);
+                        btn.classList.toggle('text-white', !data.favorited);
+                        btn.title = data.favorited ? 'Remove from favorites' : 'Add to favorites';
+                    });
+            });
+        })();
+    </script>
+
     @unless ($open)
         <script>
             document.querySelectorAll('.closed-restaurant-form').forEach(function (form) {
