@@ -29,7 +29,7 @@
         </div>
     @endif
 
-    <div class="mt-4 mb-8 grid lg:grid-cols-2 gap-5 items-stretch">
+    <div class="mt-4 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-5 items-stretch">
         {{-- Left column: info card (faded banner bg) + stats row beneath --}}
         <div class="flex flex-col gap-4">
             <div class="flex-1 rounded-2xl text-white shadow-lg relative overflow-hidden">
