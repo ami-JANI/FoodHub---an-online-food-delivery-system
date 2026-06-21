@@ -86,6 +86,22 @@ class Restaurant extends Authenticatable
     }
 
     /**
+     * Percentage of reviews rated 4 stars or higher.
+     */
+    public function positiveReviewPercentage(): int
+    {
+        $total = $this->reviewCount();
+
+        if ($total === 0) {
+            return 0;
+        }
+
+        $positive = $this->reviews()->where('rating', '>=', 4)->count();
+
+        return (int) round($positive / $total * 100);
+    }
+
+    /**
      * Great-circle distance in kilometers between the restaurant and the given coordinates.
      */
     public function distanceFromKm(?float $lat, ?float $lng): ?float
