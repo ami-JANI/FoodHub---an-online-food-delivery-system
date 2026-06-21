@@ -62,6 +62,23 @@ class Restaurant extends Authenticatable
         return $this->hasMany(RestaurantMessage::class)->latest();
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class)->latest();
+    }
+
+    public function reviewCount(): int
+    {
+        return $this->reviews()->count();
+    }
+
+    public function averageRating(): float
+    {
+        $average = $this->reviews()->avg('rating');
+
+        return $average !== null ? round($average, 1) : (float) $this->rating;
+    }
+
     /**
      * Great-circle distance in kilometers between the restaurant and the given coordinates.
      */

@@ -18,6 +18,7 @@ use App\Http\Controllers\RestaurantHoursController;
 use App\Http\Controllers\RestaurantMessageController;
 use App\Http\Controllers\RestaurantOrderController;
 use App\Http\Controllers\RestaurantProfileController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RiderDashboardController;
 use App\Http\Controllers\TrackOrderController;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +63,9 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/order/{order}/confirmation', [CheckoutController::class, 'success'])->name('cart.success');
 
     Route::get('/track', [TrackOrderController::class, 'index'])->name('track.index');
+
+    Route::get('/track/{trackingCode}/review', [ReviewController::class, 'create'])->name('reviews.create');
+    Route::post('/track/{trackingCode}/review', [ReviewController::class, 'store'])->name('reviews.store');
 });
 
 // Restaurant (merchant) auth
