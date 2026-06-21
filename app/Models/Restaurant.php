@@ -17,7 +17,7 @@ class Restaurant extends Authenticatable
     protected $fillable = [
         'name', 'slug', 'email', 'password', 'owner_name', 'phone',
         'cuisine', 'description', 'address_line', 'logo', 'cover_image', 'latitude', 'longitude',
-        'rating', 'delivery_time', 'delivery_fee', 'is_open', 'is_approved', 'is_removed_by_admin',
+        'rating', 'delivery_time', 'delivery_fee', 'minimum_order', 'is_open', 'is_approved', 'is_removed_by_admin',
         'opening_time', 'closing_time', 'is_manually_closed', 'is_manually_opened',
     ];
 
