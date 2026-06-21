@@ -52,6 +52,26 @@
         </div>
     @endif
 
+    @if ($restaurant->adminEdits->isNotEmpty())
+        <div class="mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl px-4 py-4">
+            <div class="flex items-start gap-3 mb-2">
+                <span class="text-lg shrink-0">🛠️</span>
+                <p class="font-semibold text-blue-800 dark:text-blue-300 text-sm">Recent changes made by the FoodHub admin</p>
+            </div>
+            <ul class="space-y-1.5 pl-1">
+                @foreach ($restaurant->adminEdits->take(8) as $edit)
+                    <li class="text-sm text-blue-700 dark:text-blue-400 flex items-center gap-2">
+                        @unless ($edit->seen_by_restaurant)
+                            <span class="text-[10px] font-bold uppercase bg-blue-600 text-white px-1.5 py-0.5 rounded shrink-0">New</span>
+                        @endunless
+                        <span>{{ $edit->summary }}</span>
+                        <span class="text-xs text-blue-400 dark:text-blue-500">&middot; {{ $edit->created_at->diffForHumans() }}</span>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="mb-6 flex items-center gap-4">
         <div class="w-14 h-14 shrink-0 rounded-xl bg-gradient-to-br from-stone-700 to-rose-950 flex items-center justify-center text-2xl text-white overflow-hidden">
             @if ($restaurant->logo)
