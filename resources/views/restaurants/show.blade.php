@@ -86,18 +86,18 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-3 text-center">
+            <div class="grid grid-cols-3 gap-2 text-center">
                 <div>
-                    <p class="text-2xl font-bold">{{ $restaurant->positiveReviewPercentage() }} %</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Positive Review</p>
+                    <p class="text-base sm:text-lg font-bold whitespace-nowrap">{{ $restaurant->positiveReviewPercentage() }} %</p>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400">Positive Review</p>
                 </div>
                 <div>
-                    <p class="text-2xl font-bold">{{ $restaurant->delivery_time }}</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Delivery Time</p>
+                    <p class="text-base sm:text-lg font-bold whitespace-nowrap">{{ $restaurant->delivery_time }}</p>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400">Delivery Time</p>
                 </div>
                 <div>
-                    <p class="text-2xl font-bold">Tk {{ number_format($restaurant->minimum_order, 0) }}</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Minimum Order</p>
+                    <p class="text-base sm:text-lg font-bold whitespace-nowrap">Tk {{ number_format($restaurant->minimum_order, 0) }}</p>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400">Minimum Order</p>
                 </div>
             </div>
         </div>
