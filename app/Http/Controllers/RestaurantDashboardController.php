@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,6 +22,8 @@ class RestaurantDashboardController extends Controller
         // Mark admin-edit notices as seen so the unseen highlight clears on next load.
         $restaurant->adminEdits()->where('seen_by_restaurant', false)->update(['seen_by_restaurant' => true]);
 
-        return view('restaurant.dashboard', compact('restaurant', 'pendingUpdateRequest', 'incomingOrders'));
+        $adminEmail = Admin::value('email') ?? 'admin@foodhub.test';
+
+        return view('restaurant.dashboard', compact('restaurant', 'pendingUpdateRequest', 'incomingOrders', 'adminEmail'));
     }
 }

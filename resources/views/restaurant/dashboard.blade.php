@@ -3,6 +3,8 @@
 @section('title', 'Dashboard - ' . $restaurant->name)
 
 @section('header-actions')
+    <a href="mailto:{{ $adminEmail }}?subject={{ rawurlencode('FoodHub support — ' . $restaurant->name) }}"
+       class="text-sm font-medium bg-white/10 hover:bg-white/20 transition px-3.5 py-1.5 rounded-full">Contact admin</a>
     <a href="{{ route('restaurant.profile.edit') }}" class="text-sm font-medium bg-white/10 hover:bg-white/20 transition px-3.5 py-1.5 rounded-full">Edit profile</a>
     <form action="{{ route('restaurant.logout') }}" method="POST">
         @csrf
