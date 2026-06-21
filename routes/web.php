@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\RestaurantAuthController;
 use App\Http\Controllers\Auth\RiderAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MenuItemDashboardController;
 use App\Http\Controllers\ProfileController;
@@ -57,6 +58,8 @@ Route::middleware('auth:web')->group(function () {
     Route::put('/account/addresses/{address}', [AddressController::class, 'update'])->name('addresses.update');
     Route::delete('/account/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
     Route::patch('/account/addresses/{address}/default', [AddressController::class, 'setDefault'])->name('addresses.default');
+
+    Route::post('/restaurants/{restaurant}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
