@@ -19,6 +19,7 @@ class RestaurantSeeder extends Seeder
                 'rating' => 4.5,
                 'delivery_time' => '30-40 min',
                 'delivery_fee' => 20,
+                'minimum_order' => 200,
                 'latitude' => 23.7461,
                 'longitude' => 90.3742,
                 'menu' => [
@@ -38,6 +39,7 @@ class RestaurantSeeder extends Seeder
                 'rating' => 4.2,
                 'delivery_time' => '25-35 min',
                 'delivery_fee' => 25,
+                'minimum_order' => 150,
                 'latitude' => 23.7925,
                 'longitude' => 90.4078,
                 'menu' => [
@@ -57,6 +59,7 @@ class RestaurantSeeder extends Seeder
                 'rating' => 4.7,
                 'delivery_time' => '20-30 min',
                 'delivery_fee' => 15,
+                'minimum_order' => 250,
                 'latitude' => 23.7651,
                 'longitude' => 90.3585,
                 'menu' => [
@@ -76,6 +79,7 @@ class RestaurantSeeder extends Seeder
                 'rating' => 4.3,
                 'delivery_time' => '15-25 min',
                 'delivery_fee' => 10,
+                'minimum_order' => 100,
                 'latitude' => 23.7188,
                 'longitude' => 90.3879,
                 'menu' => [
@@ -99,6 +103,7 @@ class RestaurantSeeder extends Seeder
                 'rating' => $r['rating'],
                 'delivery_time' => $r['delivery_time'],
                 'delivery_fee' => $r['delivery_fee'],
+                'minimum_order' => $r['minimum_order'],
                 'latitude' => $r['latitude'],
                 'longitude' => $r['longitude'],
                 'is_open' => true,
