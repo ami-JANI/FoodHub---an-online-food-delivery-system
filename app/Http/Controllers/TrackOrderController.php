@@ -29,7 +29,7 @@ class TrackOrderController extends Controller
     public function show(string $trackingCode)
     {
         $order = Order::where('tracking_code', $trackingCode)
-            ->with('items', 'restaurant', 'rider', 'messages')
+            ->with('items', 'restaurant', 'rider', 'messages', 'review')
             ->firstOrFail();
 
         $isOwner = Auth::guard('web')->check() && Auth::guard('web')->id() === $order->user_id;

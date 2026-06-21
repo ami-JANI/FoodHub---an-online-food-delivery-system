@@ -34,6 +34,17 @@
                 </ol>
             </div>
 
+            @if ($isOwner && $order->status === \App\Models\Order::DELIVERED)
+                <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 flex items-center justify-between gap-3 flex-wrap">
+                    @if ($order->review)
+                        <p class="text-sm text-gray-600 dark:text-gray-300">⭐ You rated this order {{ $order->review->rating }}/5. Thanks for your feedback!</p>
+                    @else
+                        <p class="text-sm text-gray-600 dark:text-gray-300">How was your order from {{ $order->restaurant->name }}?</p>
+                        <a href="{{ route('reviews.create', $order->tracking_code) }}" class="text-sm font-semibold bg-rose-950 hover:bg-rose-900 text-white px-4 py-2 rounded-full transition shrink-0">Leave a review</a>
+                    @endif
+                </div>
+            @endif
+
             @if ($order->rider && $order->status !== \App\Models\Order::DELIVERED)
                 <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
                     <h2 class="font-bold mb-1">Your rider</h2>
