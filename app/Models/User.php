@@ -57,4 +57,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class)->latest();
     }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class)->latest();
+    }
+
+    public function hasFavorited(Restaurant $restaurant): bool
+    {
+        return $this->favorites()->where('restaurant_id', $restaurant->id)->exists();
+    }
 }

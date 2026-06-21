@@ -68,6 +68,11 @@ class Restaurant extends Authenticatable
         return $this->hasMany(Review::class)->latest();
     }
 
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
     public function reviewCount(): int
     {
         return $this->reviews()->count();
