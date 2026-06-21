@@ -188,6 +188,7 @@
                         <span class="text-xs font-semibold {{ $restaurant->isCurrentlyOpen() ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400' }} px-2.5 py-1 rounded-full">
                             {{ $restaurant->isCurrentlyOpen() ? 'Open' : 'Closed' }}
                         </span>
+                        <a href="{{ route('admin.restaurants.menu', $restaurant) }}" class="text-xs font-semibold bg-rose-50 dark:bg-rose-900/30 hover:bg-rose-100 text-rose-700 dark:text-rose-400 px-3 py-1.5 rounded-full transition">Manage menu</a>
                         <form action="{{ route('admin.restaurants.remove', $restaurant) }}" method="POST" onsubmit="return confirm('Remove {{ $restaurant->name }} from the app? The owner will still be able to sign in and contact you.')">
                             @csrf
                             @method('PATCH')

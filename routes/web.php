@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AdminApprovalController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminMenuController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\RestaurantAuthController;
@@ -152,5 +153,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/restaurants/{restaurant}/restore', [AdminApprovalController::class, 'restoreRestaurant'])->name('restaurants.restore');
 
         Route::patch('/restaurant-messages/{message}/resolve', [AdminApprovalController::class, 'resolveRestaurantMessage'])->name('restaurant-messages.resolve');
+
+        Route::get('/restaurants/{restaurant}/menu', [AdminMenuController::class, 'manage'])->name('restaurants.menu');
     });
 });
