@@ -5,8 +5,6 @@
 @section('content')
     @php($open = $restaurant->isCurrentlyOpen())
 
-    <a href="{{ route('home') }}" class="text-sm text-gray-500 dark:text-gray-400 hover:text-rose-800 dark:hover:text-rose-400 transition inline-flex items-center gap-1">&larr; All restaurants</a>
-
     @unless ($open)
         <div class="mt-4 flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 rounded-xl px-4 py-3 text-sm">
             <span class="text-lg shrink-0">🚫</span>
@@ -31,7 +29,7 @@
         </div>
     @endif
 
-    <div class="mt-4 mb-8 rounded-2xl text-white shadow-lg relative overflow-hidden">
+    <div class="ml-auto w-full sm:max-w-xl mt-4 rounded-2xl text-white shadow-lg relative overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-br from-stone-900 to-rose-950">
             @if ($restaurant->cover_image)
                 <img src="{{ asset('uploads/' . $restaurant->cover_image) }}" alt="{{ $restaurant->name }} banner" class="w-full h-full object-cover opacity-50">
@@ -88,7 +86,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-3 gap-3 mb-8 text-center">
+    <div class="ml-auto w-full sm:max-w-xl grid grid-cols-3 gap-3 mb-8 text-center">
         <div>
             <p class="text-2xl font-bold">{{ $restaurant->positiveReviewPercentage() }}%</p>
             <p class="text-xs text-gray-500 dark:text-gray-400">Positive Review</p>
