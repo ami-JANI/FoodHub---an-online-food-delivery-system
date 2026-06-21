@@ -155,5 +155,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/restaurant-messages/{message}/resolve', [AdminApprovalController::class, 'resolveRestaurantMessage'])->name('restaurant-messages.resolve');
 
         Route::get('/restaurants/{restaurant}/menu', [AdminMenuController::class, 'manage'])->name('restaurants.menu');
+        Route::put('/menu-items/{menuItem}', [AdminMenuController::class, 'updateMenuItem'])->name('menu-items.update');
+        Route::delete('/menu-items/{menuItem}', [AdminMenuController::class, 'deleteMenuItem'])->name('menu-items.delete');
     });
 });
