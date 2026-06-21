@@ -40,27 +40,66 @@
         <div class="relative px-6 py-8">
             <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-4">
-                    @if ($restaurant->logo)
-                        <img src="{{ asset('uploads/' . $restaurant->logo) }}" alt="{{ $restaurant->name }} logo"
-                             class="w-16 h-16 rounded-full object-cover border-2 border-white shadow shrink-0">
-                    @endif
+                    <div class="relative shrink-0">
+                        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow bg-stone-800 flex items-center justify-center">
+                            @if ($restaurant->logo)
+                                <img src="{{ asset('uploads/' . $restaurant->logo) }}" alt="{{ $restaurant->name }} logo" class="w-full h-full object-cover">
+                            @else
+                                <span class="text-2xl">🍽️</span>
+                            @endif
+                        </div>
+                        @unless ($open)
+                            <div class="absolute inset-0 rounded-full bg-black/70 flex items-center justify-center text-center px-1">
+                                <span class="text-[10px] font-bold leading-tight">Closed<br>Now</span>
+                            </div>
+                        @endunless
+                    </div>
                     <div>
                         <h1 class="text-2xl sm:text-3xl font-extrabold">{{ $restaurant->name }}</h1>
                         <p class="text-stone-300 mt-1">{{ $restaurant->cuisine }}</p>
                     </div>
                 </div>
-                <span class="shrink-0 text-sm font-semibold {{ $open ? 'bg-white text-green-700' : 'bg-white/80 text-gray-600' }} px-3 py-1 rounded-full">
-                    {{ $open ? 'Open now' : 'Currently unavailable' }}
-                </span>
+
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" id="favorite-btn" data-restaurant-id="{{ $restaurant->id }}"
+                        class="w-9 h-9 rounded-full border border-white/30 hover:bg-white/10 transition flex items-center justify-center text-lg {{ $isFavorited ? 'text-rose-400' : 'text-white' }}"
+                        title="{{ $isFavorited ? 'Remove from favorites' : 'Add to favorites' }}">
+                        {{ $isFavorited ? '❤️' : '🤍' }}
+                    </button>
+                    @if ($restaurant->latitude && $restaurant->longitude)
+                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ $restaurant->latitude }},{{ $restaurant->longitude }}" target="_blank" rel="noopener"
+                            class="w-9 h-9 rounded-full border border-white/30 hover:bg-white/10 transition flex items-center justify-center text-lg" title="Get directions">
+                            🧭
+                        </a>
+                    @endif
+                    <button type="button" id="share-btn" data-name="{{ $restaurant->name }}"
+                        class="w-9 h-9 rounded-full border border-white/30 hover:bg-white/10 transition flex items-center justify-center text-lg" title="Share">
+                        🔗
+                    </button>
+                </div>
             </div>
-            <div class="flex items-center gap-4 text-sm mt-4 text-stone-300">
-                <span class="flex items-center gap-1">★ {{ $restaurant->averageRating() }} <span class="text-stone-400">({{ $restaurant->reviewCount() }} review{{ $restaurant->reviewCount() === 1 ? '' : 's' }})</span></span>
-                <span class="flex items-center gap-1">⏱ {{ $restaurant->delivery_time }}</span>
-                <span class="flex items-center gap-1">🚲 Tk {{ number_format($restaurant->computed_delivery_fee, 0) }} delivery</span>
-                @if ($restaurant->distance_km !== null)
-                    <span class="flex items-center gap-1">📍 {{ number_format($restaurant->distance_km, 1) }} km away</span>
-                @endif
+
+            <div class="flex items-center gap-3 text-sm mt-4 flex-wrap">
+                <span class="flex items-center gap-1 bg-green-600 text-white font-semibold px-2 py-0.5 rounded-md">★ {{ $restaurant->averageRating() }}</span>
+                <a href="#reviews" class="text-stone-200 hover:text-white hover:underline">{{ $restaurant->reviewCount() }} Ratings</a>
+                <span class="text-stone-500">|</span>
+                <a href="#reviews" class="text-stone-200 hover:text-white hover:underline">{{ $restaurant->reviewCount() }} Reviews</a>
             </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 mb-8 text-center">
+        <div>
+            <p class="text-2xl font-bold">{{ $restaurant->positiveReviewPercentage() }}%</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Positive Review</p>
+        </div>
+        <div>
+            <p class="text-2xl font-bold">{{ $restaurant->delivery_time }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Delivery Time</p>
+        </div>
+        <div>
+            <p class="text-2xl font-bold">Tk {{ number_format($restaurant->minimum_order, 0) }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Minimum Order</p>
         </div>
     </div>
 
@@ -110,7 +149,7 @@
         </div>
     @endforeach
 
-    <h2 class="text-lg font-bold mb-3 mt-10">Reviews ({{ $restaurant->reviewCount() }})</h2>
+    <h2 id="reviews" class="text-lg font-bold mb-3 mt-10 scroll-mt-32">Reviews ({{ $restaurant->reviewCount() }})</h2>
     @if ($restaurant->reviews->isEmpty())
         <p class="text-sm text-gray-500 dark:text-gray-400">No reviews yet. Be the first to order and review!</p>
     @else
