@@ -54,7 +54,7 @@
                 </span>
             </div>
             <div class="flex items-center gap-4 text-sm mt-4 text-stone-300">
-                <span class="flex items-center gap-1">★ {{ $restaurant->rating }}</span>
+                <span class="flex items-center gap-1">★ {{ $restaurant->averageRating() }} <span class="text-stone-400">({{ $restaurant->reviewCount() }} review{{ $restaurant->reviewCount() === 1 ? '' : 's' }})</span></span>
                 <span class="flex items-center gap-1">⏱ {{ $restaurant->delivery_time }}</span>
                 <span class="flex items-center gap-1">🚲 Tk {{ number_format($restaurant->computed_delivery_fee, 0) }} delivery</span>
                 @if ($restaurant->distance_km !== null)
@@ -109,6 +109,33 @@
             @endforeach
         </div>
     @endforeach
+
+    <h2 class="text-lg font-bold mb-3 mt-10">Reviews ({{ $restaurant->reviewCount() }})</h2>
+    @if ($restaurant->reviews->isEmpty())
+        <p class="text-sm text-gray-500 dark:text-gray-400">No reviews yet. Be the first to order and review!</p>
+    @else
+        <div class="space-y-4">
+            @foreach ($restaurant->reviews as $review)
+                <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
+                    <div class="flex items-center justify-between gap-2 mb-1">
+                        <span class="font-semibold text-sm">{{ $review->reviewerName() }}</span>
+                        <span class="text-amber-500 text-sm shrink-0">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</span>
+                    </div>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-2">{{ $review->created_at->diffForHumans() }}</p>
+                    @if ($review->body)
+                        <p class="text-sm text-gray-600 dark:text-gray-300">{{ $review->body }}</p>
+                    @endif
+                    @if (! empty($review->photos))
+                        <div class="flex items-center gap-2 mt-3">
+                            @foreach ($review->photos as $photo)
+                                <img src="{{ asset('uploads/' . $photo) }}" alt="Review photo" class="w-20 h-20 rounded-lg object-cover border border-gray-100 dark:border-gray-800">
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    @endif
 
     @if ($cartConflict)
         <script>

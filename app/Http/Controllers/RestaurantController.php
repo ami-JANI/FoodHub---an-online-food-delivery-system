@@ -92,7 +92,7 @@ class RestaurantController extends Controller
         $restaurant = Restaurant::where('slug', $slug)
             ->with(['categories.menuItems' => function ($query) {
                 $query->where('is_approved', true)->where('is_available', true);
-            }])
+            }, 'reviews.user'])
             ->firstOrFail();
 
         abort_unless($restaurant->is_approved && ! $restaurant->is_removed_by_admin, 404);

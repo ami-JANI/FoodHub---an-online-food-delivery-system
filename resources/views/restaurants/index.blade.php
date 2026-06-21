@@ -15,12 +15,14 @@
             </div>
         </div>
 
-        @foreach ($cuisines->take(5) as $c)
-            <a href="{{ route('home', $activeCuisine === $c ? request()->except('cuisine') : array_merge(request()->except('cuisine'), ['cuisine' => $c])) }}"
-               class="shrink-0 text-sm font-medium rounded-full px-3.5 py-1.5 transition whitespace-nowrap {{ $activeCuisine === $c ? 'bg-rose-950 text-white' : 'border border-gray-200 dark:border-gray-700 hover:border-rose-400' }}">
-                {{ $c }}
-            </a>
-        @endforeach
+        <div class="flex items-center gap-2 flex-nowrap overflow-x-auto">
+            @foreach ($cuisines->take(5) as $c)
+                <a href="{{ route('home', $activeCuisine === $c ? request()->except('cuisine') : array_merge(request()->except('cuisine'), ['cuisine' => $c])) }}"
+                   class="shrink-0 text-sm font-medium rounded-full px-3.5 py-1.5 transition whitespace-nowrap {{ $activeCuisine === $c ? 'bg-rose-950 text-white' : 'border border-gray-200 dark:border-gray-700 hover:border-rose-400' }}">
+                    {{ $c }}
+                </a>
+            @endforeach
+        </div>
     </div>
 @endsection
 
@@ -73,7 +75,12 @@
                     <div class="p-4 {{ $restaurant->logo ? 'pt-6' : '' }}">
                         <div class="flex items-center justify-between gap-2">
                             <h3 class="font-bold text-lg group-hover:text-rose-800 dark:group-hover:text-rose-400 transition truncate">{{ $restaurant->name }}</h3>
-                            <span class="shrink-0 text-sm bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-md font-semibold">★ {{ $restaurant->rating }}</span>
+                            <span class="shrink-0 text-sm bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-md font-semibold">
+                                ★ {{ $restaurant->averageRating() }}
+                                @if ($restaurant->reviewCount() > 0)
+                                    <span class="font-normal text-amber-600 dark:text-amber-500">({{ $restaurant->reviewCount() }})</span>
+                                @endif
+                            </span>
                         </div>
                         <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $restaurant->cuisine }}</p>
                         <div class="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
