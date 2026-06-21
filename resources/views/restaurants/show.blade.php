@@ -29,75 +29,86 @@
         </div>
     @endif
 
-    <div class="ml-auto w-full sm:max-w-xl mt-4 rounded-2xl text-white shadow-lg relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-stone-900 to-rose-950">
-            @if ($restaurant->cover_image)
-                <img src="{{ asset('uploads/' . $restaurant->cover_image) }}" alt="{{ $restaurant->name }} banner" class="w-full h-full object-cover opacity-50">
-            @endif
-        </div>
-        <div class="relative px-6 py-8">
-            <div class="flex items-start justify-between gap-3">
-                <div class="flex items-center gap-4">
-                    <div class="relative shrink-0">
-                        <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow bg-stone-800 flex items-center justify-center">
-                            @if ($restaurant->logo)
-                                <img src="{{ asset('uploads/' . $restaurant->logo) }}" alt="{{ $restaurant->name }} logo" class="w-full h-full object-cover">
-                            @else
-                                <span class="text-2xl">🍽️</span>
-                            @endif
-                        </div>
-                        @unless ($open)
-                            <div class="absolute inset-0 rounded-full bg-black/70 flex items-center justify-center text-center px-1">
-                                <span class="text-[10px] font-bold leading-tight">Closed<br>Now</span>
-                            </div>
-                        @endunless
-                    </div>
-                    <div>
-                        <h1 class="text-2xl sm:text-3xl font-extrabold">{{ $restaurant->name }}</h1>
-                        <p class="text-stone-300 mt-1">{{ $restaurant->cuisine }}</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2 shrink-0">
-                    <button type="button" id="favorite-btn" data-restaurant-id="{{ $restaurant->id }}"
-                        class="w-9 h-9 rounded-full border border-white/30 hover:bg-white/10 transition flex items-center justify-center text-lg {{ $isFavorited ? 'text-rose-400' : 'text-white' }}"
-                        title="{{ $isFavorited ? 'Remove from favorites' : 'Add to favorites' }}">
-                        {{ $isFavorited ? '❤️' : '🤍' }}
-                    </button>
-                    @if ($restaurant->latitude && $restaurant->longitude)
-                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ $restaurant->latitude }},{{ $restaurant->longitude }}" target="_blank" rel="noopener"
-                            class="w-9 h-9 rounded-full border border-white/30 hover:bg-white/10 transition flex items-center justify-center text-lg" title="Get directions">
-                            🧭
-                        </a>
+    <div class="mt-4 mb-8 grid lg:grid-cols-2 gap-5 items-stretch">
+        {{-- Left column: info card (faded banner bg) + stats row beneath --}}
+        <div class="flex flex-col gap-4">
+            <div class="flex-1 rounded-2xl text-white shadow-lg relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-stone-900 to-rose-950">
+                    @if ($restaurant->cover_image)
+                        <img src="{{ asset('uploads/' . $restaurant->cover_image) }}" alt="{{ $restaurant->name }} banner" class="w-full h-full object-cover opacity-20">
                     @endif
-                    <button type="button" id="share-btn" data-name="{{ $restaurant->name }}"
-                        class="w-9 h-9 rounded-full border border-white/30 hover:bg-white/10 transition flex items-center justify-center text-lg" title="Share">
-                        🔗
-                    </button>
+                </div>
+                <div class="relative px-6 py-7 h-full flex flex-col">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="relative shrink-0">
+                            <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow bg-stone-800 flex items-center justify-center">
+                                @if ($restaurant->logo)
+                                    <img src="{{ asset('uploads/' . $restaurant->logo) }}" alt="{{ $restaurant->name }} logo" class="w-full h-full object-cover">
+                                @else
+                                    <span class="text-3xl">🍽️</span>
+                                @endif
+                            </div>
+                            @unless ($open)
+                                <div class="absolute inset-0 rounded-full bg-black/70 flex items-center justify-center text-center px-1">
+                                    <span class="text-xs font-bold leading-tight">Closed<br>Now</span>
+                                </div>
+                            @endunless
+                        </div>
+
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button type="button" id="favorite-btn" data-restaurant-id="{{ $restaurant->id }}"
+                                class="w-9 h-9 rounded-full border border-white/30 hover:bg-white/10 transition flex items-center justify-center text-lg {{ $isFavorited ? 'text-rose-400' : 'text-white' }}"
+                                title="{{ $isFavorited ? 'Remove from favorites' : 'Add to favorites' }}">
+                                {{ $isFavorited ? '❤️' : '🤍' }}
+                            </button>
+                            @if ($restaurant->latitude && $restaurant->longitude)
+                                <a href="https://www.google.com/maps/dir/?api=1&destination={{ $restaurant->latitude }},{{ $restaurant->longitude }}" target="_blank" rel="noopener"
+                                    class="w-9 h-9 rounded-full border border-white/30 hover:bg-white/10 transition flex items-center justify-center text-lg" title="Get directions">
+                                    🧭
+                                </a>
+                            @endif
+                            <button type="button" id="share-btn" data-name="{{ $restaurant->name }}"
+                                class="w-9 h-9 rounded-full border border-white/30 hover:bg-white/10 transition flex items-center justify-center text-lg" title="Share">
+                                🔗
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h1 class="text-2xl sm:text-3xl font-extrabold">{{ $restaurant->name }}</h1>
+                        <div class="flex items-center gap-3 text-sm mt-2 flex-wrap">
+                            <span class="flex items-center gap-1 bg-green-600 text-white font-semibold px-2 py-0.5 rounded-md">{{ $restaurant->averageRating() }} ★</span>
+                            <a href="#reviews" class="text-stone-200 hover:text-white hover:underline">{{ $restaurant->reviewCount() }} Ratings</a>
+                            <span class="text-stone-400">|</span>
+                            <a href="#reviews" class="text-stone-200 hover:text-white hover:underline">{{ $restaurant->reviewCount() }} Reviews</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 text-sm mt-4 flex-wrap">
-                <span class="flex items-center gap-1 bg-green-600 text-white font-semibold px-2 py-0.5 rounded-md">★ {{ $restaurant->averageRating() }}</span>
-                <a href="#reviews" class="text-stone-200 hover:text-white hover:underline">{{ $restaurant->reviewCount() }} Ratings</a>
-                <span class="text-stone-500">|</span>
-                <a href="#reviews" class="text-stone-200 hover:text-white hover:underline">{{ $restaurant->reviewCount() }} Reviews</a>
+            <div class="grid grid-cols-3 gap-3 text-center">
+                <div>
+                    <p class="text-2xl font-bold">{{ $restaurant->positiveReviewPercentage() }} %</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Positive Review</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold">{{ $restaurant->delivery_time }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Delivery Time</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold">Tk {{ number_format($restaurant->minimum_order, 0) }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Minimum Order</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="ml-auto w-full sm:max-w-xl grid grid-cols-3 gap-3 mb-8 text-center">
-        <div>
-            <p class="text-2xl font-bold">{{ $restaurant->positiveReviewPercentage() }}%</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">Positive Review</p>
-        </div>
-        <div>
-            <p class="text-2xl font-bold">{{ $restaurant->delivery_time }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">Delivery Time</p>
-        </div>
-        <div>
-            <p class="text-2xl font-bold">Tk {{ number_format($restaurant->minimum_order, 0) }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">Minimum Order</p>
+        {{-- Right column: clear, full-color banner image --}}
+        <div class="rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-stone-200 to-amber-100 dark:from-stone-800 dark:to-stone-700 min-h-[220px] flex items-center justify-center">
+            @if ($restaurant->cover_image)
+                <img src="{{ asset('uploads/' . $restaurant->cover_image) }}" alt="{{ $restaurant->name }} banner" class="w-full h-full object-cover">
+            @else
+                <span class="text-6xl">🍽️</span>
+            @endif
         </div>
     </div>
 
