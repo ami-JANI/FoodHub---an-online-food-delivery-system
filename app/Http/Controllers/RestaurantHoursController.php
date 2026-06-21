@@ -26,9 +26,15 @@ class RestaurantHoursController extends Controller
     {
         $restaurant = Auth::guard('restaurant')->user();
 
-        $restaurant->update(['is_manually_closed' => ! $restaurant->is_manually_closed]);
+        $closingNow = ! $restaurant->is_manually_closed;
 
-        return back()->with('status', $restaurant->is_manually_closed
+        $restaurant->update([
+            'is_manually_closed' => $closingNow,
+            // Reopening is a manual override too, so it stays open even outside business hours.
+            'is_manually_opened' => ! $closingNow,
+        ]);
+
+        return back()->with('status', $closingNow
             ? 'Your restaurant is now closed to new orders.'
             : 'Your restaurant is open again.');
     }

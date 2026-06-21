@@ -18,7 +18,7 @@ class Restaurant extends Authenticatable
         'name', 'slug', 'email', 'password', 'owner_name', 'phone',
         'cuisine', 'description', 'address_line', 'logo', 'cover_image', 'latitude', 'longitude',
         'rating', 'delivery_time', 'delivery_fee', 'is_open', 'is_approved', 'is_removed_by_admin',
-        'opening_time', 'closing_time', 'is_manually_closed',
+        'opening_time', 'closing_time', 'is_manually_closed', 'is_manually_opened',
     ];
 
     protected $hidden = [
@@ -34,6 +34,7 @@ class Restaurant extends Authenticatable
             'is_approved' => 'boolean',
             'is_removed_by_admin' => 'boolean',
             'is_manually_closed' => 'boolean',
+            'is_manually_opened' => 'boolean',
         ];
     }
 
@@ -122,13 +123,17 @@ class Restaurant extends Authenticatable
     }
 
     /**
-     * Whether the restaurant is open right now: manual closure always wins,
-     * otherwise based on opening/closing hours (open all day if unset).
+     * Whether the restaurant is open right now: a manual toggle (forced open or
+     * forced closed) always wins over the opening/closing hours.
      */
     public function isCurrentlyOpen(): bool
     {
         if ($this->is_manually_closed) {
             return false;
+        }
+
+        if ($this->is_manually_opened) {
+            return true;
         }
 
         if (! $this->opening_time || ! $this->closing_time) {
