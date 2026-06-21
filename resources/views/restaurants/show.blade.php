@@ -194,6 +194,28 @@
 
     <script>
         (function () {
+            var shareBtn = document.getElementById('share-btn');
+            if (!shareBtn) return;
+
+            shareBtn.addEventListener('click', function () {
+                var url = window.location.href;
+                var name = shareBtn.dataset.name;
+
+                if (navigator.share) {
+                    navigator.share({ title: name, text: 'Check out ' + name + ' on FoodHub', url: url }).catch(function () {});
+                } else if (navigator.clipboard) {
+                    navigator.clipboard.writeText(url).then(function () {
+                        alert('Link copied to clipboard!');
+                    });
+                } else {
+                    alert(url);
+                }
+            });
+        })();
+    </script>
+
+    <script>
+        (function () {
             var btn = document.getElementById('favorite-btn');
             if (!btn) return;
 
