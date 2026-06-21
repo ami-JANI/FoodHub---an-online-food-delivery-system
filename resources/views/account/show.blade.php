@@ -50,6 +50,33 @@
         </div>
     @endif
 
+    <h2 class="text-lg font-bold mb-3">My favorites</h2>
+    @if ($favorites->isEmpty())
+        <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 text-center text-gray-500 dark:text-gray-400 mb-8">
+            You haven't favorited any restaurants yet.
+        </div>
+    @else
+        <div class="grid sm:grid-cols-2 gap-3 mb-8">
+            @foreach ($favorites as $favorite)
+                @continue (! $favorite->restaurant)
+                <a href="{{ route('restaurants.show', $favorite->restaurant->slug) }}"
+                   class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 flex items-center gap-3 hover:border-rose-400 transition">
+                    <div class="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-stone-200 to-amber-100 dark:from-stone-800 dark:to-stone-700 flex items-center justify-center overflow-hidden">
+                        @if ($favorite->restaurant->logo)
+                            <img src="{{ asset('uploads/' . $favorite->restaurant->logo) }}" alt="{{ $favorite->restaurant->name }}" class="w-full h-full object-cover">
+                        @else
+                            🍽️
+                        @endif
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-semibold truncate">{{ $favorite->restaurant->name }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $favorite->restaurant->cuisine }}</p>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    @endif
+
     <h2 class="text-lg font-bold mb-3">Recent orders</h2>
     @if ($orders->isEmpty())
         <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 text-center text-gray-500 dark:text-gray-400">
