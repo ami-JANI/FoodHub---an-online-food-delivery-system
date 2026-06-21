@@ -157,5 +157,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/restaurants/{restaurant}/menu', [AdminMenuController::class, 'manage'])->name('restaurants.menu');
         Route::put('/menu-items/{menuItem}', [AdminMenuController::class, 'updateMenuItem'])->name('menu-items.update');
         Route::delete('/menu-items/{menuItem}', [AdminMenuController::class, 'deleteMenuItem'])->name('menu-items.delete');
+        Route::put('/categories/{category}', [AdminMenuController::class, 'updateCategory'])->name('categories.update');
+        Route::delete('/categories/{category}', [AdminMenuController::class, 'deleteCategory'])->name('categories.delete');
     });
 });

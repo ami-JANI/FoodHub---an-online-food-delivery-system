@@ -46,4 +46,34 @@ class AdminMenuController extends Controller
 
         return back()->with('status', "\"{$name}\" was removed.");
     }
+
+    public function updateCategory(Request $request, Category $category)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $oldName = $category->name;
+        $category->update($data);
+
+        $category->restaurant->adminEdits()->create([
+            'summary' => "Admin renamed category \"{$oldName}\" to \"{$category->name}\".",
+        ]);
+
+        return back()->with('status', "Category renamed to \"{$category->name}\".");
+    }
+
+    public function deleteCategory(Category $category)
+    {
+        $restaurant = $category->restaurant;
+        $name = $category->name;
+
+        $category->delete();
+
+        $restaurant->adminEdits()->create([
+            'summary' => "Admin removed category \"{$name}\" and its items.",
+        ]);
+
+        return back()->with('status', "Category \"{$name}\" was removed.");
+    }
 }

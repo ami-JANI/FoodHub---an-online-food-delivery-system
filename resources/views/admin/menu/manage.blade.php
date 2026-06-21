@@ -19,7 +19,20 @@
     @else
         @foreach ($restaurant->categories as $category)
             <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 mb-5">
-                <h2 class="text-sm font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-3">{{ $category->name }}</h2>
+                <div class="flex items-center justify-between gap-2 mb-3 flex-wrap">
+                    <form action="{{ route('admin.categories.update', $category) }}" method="POST" class="flex items-center gap-2">
+                        @csrf
+                        @method('PUT')
+                        <input type="text" name="name" value="{{ $category->name }}" required
+                            class="border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-1.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-rose-800 focus:border-rose-800 transition">
+                        <button type="submit" class="text-xs font-semibold bg-rose-950 hover:bg-rose-900 text-white px-3 py-1.5 rounded-full transition">Rename</button>
+                    </form>
+                    <form action="{{ route('admin.categories.delete', $category) }}" method="POST" onsubmit="return confirm('Delete category \'{{ $category->name }}\' and all its items? This cannot be undone.')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="text-xs font-semibold text-red-600 hover:underline">Delete category</button>
+                    </form>
+                </div>
 
                 @if ($category->menuItems->isEmpty())
                     <p class="text-sm text-gray-400 dark:text-gray-500">No items in this category.</p>
