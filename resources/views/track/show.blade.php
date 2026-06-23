@@ -53,6 +53,20 @@
                 @endif
             </div>
 
+            @if ($isOwner && $order->canBeCancelledByCustomer())
+                <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 flex items-center justify-between gap-3 flex-wrap">
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Changed your mind? You can cancel until the restaurant starts preparing your meal.</p>
+                    <form action="{{ route('track.cancel', $order->tracking_code) }}" method="POST" onsubmit="return confirm('Cancel this order? This cannot be undone.')">
+                        @csrf
+                        <button type="submit" class="text-sm font-semibold bg-red-50 dark:bg-red-900/30 hover:bg-red-100 text-red-700 dark:text-red-400 px-4 py-2 rounded-full transition shrink-0">Cancel order</button>
+                    </form>
+                </div>
+            @elseif ($isOwner && ! $order->isCancelled() && $order->status !== \App\Models\Order::DELIVERED)
+                <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 text-sm text-gray-500 dark:text-gray-400">
+                    🍳 The restaurant has started preparing your meal, so this order can no longer be cancelled.
+                </div>
+            @endif
+
             @if ($isOwner && $order->status === \App\Models\Order::DELIVERED)
                 <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 flex items-center justify-between gap-3 flex-wrap">
                     @if ($order->review)
