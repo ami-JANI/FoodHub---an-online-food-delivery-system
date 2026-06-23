@@ -26,7 +26,14 @@
     <div class="grid lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
             <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
-                <h2 class="font-bold mb-5">Order status</h2>
+                <div class="flex items-center justify-between gap-3 mb-5">
+                    <h2 class="font-bold">Order status</h2>
+                    @if ($order->rider && $order->status !== \App\Models\Order::DELIVERED && ! $order->isCancelled())
+                        <a href="#rider-map-section" class="text-sm font-semibold bg-rose-950 hover:bg-rose-900 text-white px-3.5 py-1.5 rounded-full transition inline-flex items-center gap-1.5 shrink-0">
+                            🛵 Track rider
+                        </a>
+                    @endif
+                </div>
 
                 @if ($order->isCancelled())
                     <div class="flex items-start gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-xl px-4 py-3 text-sm">
@@ -111,7 +118,7 @@
             @endif
 
             @if ($order->rider && $order->status !== \App\Models\Order::DELIVERED)
-                <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
+                <div id="rider-map-section" class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 scroll-mt-24">
                     <h2 class="font-bold mb-1">Your rider</h2>
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">{{ $order->rider->name }} &middot; {{ $order->rider->vehicle_type }} &middot; 📞 {{ $order->rider->phone }}</p>
 
