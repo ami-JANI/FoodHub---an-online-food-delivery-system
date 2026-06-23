@@ -56,6 +56,9 @@
                             <p class="text-sm text-gray-500 dark:text-gray-400 truncate">Pickup: {{ $order->restaurant->address_line }}</p>
                             <p class="text-sm text-gray-500 dark:text-gray-400 truncate">Deliver to: {{ $order->address_line }}</p>
                             <p class="text-xs text-gray-400 dark:text-gray-500">📍 {{ number_format($order->pickup_distance_km, 1) }} km away &middot; {{ $order->items->count() }} items &middot; Tk {{ number_format($order->total, 0) }}</p>
+                            @if ($order->route_distance_km !== null)
+                                <p class="text-xs font-semibold text-green-700 dark:text-green-400 mt-0.5">💸 Earn ~Tk {{ number_format($order->rider_earning, 0) }} &middot; {{ number_format($order->route_distance_km, 1) }} km route</p>
+                            @endif
                         </div>
                         <form action="{{ route('rider.orders.accept', $order) }}" method="POST" class="shrink-0">
                             @csrf
