@@ -26,6 +26,8 @@ class Order extends Model
 
     public const DELIVERED = 'delivered';
 
+    public const CANCELLED = 'cancelled';
+
     public const STEPS = [
         self::PLACED => 'Order placed',
         self::RESTAURANT_ACCEPTED => 'Restaurant accepted your order',
@@ -102,7 +104,24 @@ class Order extends Model
 
     public function statusLabel(): string
     {
+        if ($this->status === self::CANCELLED) {
+            return 'Order cancelled';
+        }
+
         return self::STEPS[$this->status] ?? $this->status;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === self::CANCELLED;
+    }
+
+    /**
+     * A customer may cancel only before the restaurant starts preparing the meal.
+     */
+    public function canBeCancelledByCustomer(): bool
+    {
+        return in_array($this->status, [self::PLACED, self::RESTAURANT_ACCEPTED], true);
     }
 
     /**
