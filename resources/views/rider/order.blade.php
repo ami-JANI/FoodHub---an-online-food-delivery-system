@@ -71,6 +71,40 @@
                 </div>
             </div>
 
+            @php
+                $legs = $order->routeLegsKm($riderLat, $riderLng);
+                $totalKm = $order->routeDistanceKm($riderLat, $riderLng);
+                $earning = $order->riderEarning($riderLat, $riderLng);
+            @endphp
+            <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
+                <h2 class="font-bold mb-3">Trip distance &amp; earnings</h2>
+                @if ($totalKm === null)
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Enable location to calculate your route distance and earnings.</p>
+                @else
+                    <div class="space-y-1.5 text-sm">
+                        <div class="flex justify-between text-gray-600 dark:text-gray-300">
+                            <span>You → restaurant (pickup)</span>
+                            <span>{{ number_format($legs['to_restaurant'], 1) }} km</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600 dark:text-gray-300">
+                            <span>Restaurant → customer (drop-off)</span>
+                            <span>{{ number_format($legs['to_customer'], 1) }} km</span>
+                        </div>
+                        <div class="flex justify-between font-semibold pt-1.5 mt-1.5 border-t border-gray-100 dark:border-gray-800">
+                            <span>Total route</span>
+                            <span>{{ number_format($totalKm, 1) }} km</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between bg-green-50 dark:bg-green-900/20 rounded-xl px-4 py-3">
+                        <div>
+                            <p class="text-xs text-green-700 dark:text-green-400">You'll earn (Tk {{ (int) \App\Models\Order::EARNING_RATE_PER_KM }}/km)</p>
+                            <p class="text-2xl font-bold text-green-700 dark:text-green-400">Tk {{ number_format($earning, 0) }}</p>
+                        </div>
+                        <span class="text-3xl">💸</span>
+                    </div>
+                @endif
+            </div>
+
             <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
                 <h2 class="font-bold mb-3">Order items</h2>
                 <div class="space-y-1">
