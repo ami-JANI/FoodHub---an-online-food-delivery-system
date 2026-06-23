@@ -3,6 +3,14 @@
 @section('title', 'Order #' . $order->tracking_code . ' - FoodHub')
 
 @section('content')
+    <style>
+        @keyframes track-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes track-pop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+        @keyframes track-sizzle { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+        @keyframes track-drive { 0% { transform: translateX(-12px); } 50% { transform: translateX(12px); } 100% { transform: translateX(-12px); } }
+        @keyframes track-celebrate { 0%, 100% { transform: rotate(0) scale(1); } 25% { transform: rotate(-12deg) scale(1.2); } 75% { transform: rotate(12deg) scale(1.2); } }
+    </style>
+
     <a href="{{ route('home') }}" class="text-sm text-gray-500 dark:text-gray-400 hover:text-rose-800 dark:hover:text-rose-400 transition inline-flex items-center gap-1">&larr; Back home</a>
 
     <div class="mt-3 mb-6 flex items-center justify-between gap-3 flex-wrap">
@@ -26,6 +34,30 @@
                         <p>This order was cancelled. No further updates will appear.</p>
                     </div>
                 @else
+                    @php
+                        $stepAnim = [
+                            \App\Models\Order::PLACED            => ['icon' => '🧾', 'anim' => 'track-bob'],
+                            \App\Models\Order::RESTAURANT_ACCEPTED => ['icon' => '👍', 'anim' => 'track-pop'],
+                            \App\Models\Order::PREPARING         => ['icon' => '🍳', 'anim' => 'track-sizzle'],
+                            \App\Models\Order::RIDER_ASSIGNED    => ['icon' => '🛵', 'anim' => 'track-bob'],
+                            \App\Models\Order::RIDER_ARRIVED     => ['icon' => '🏪', 'anim' => 'track-pop'],
+                            \App\Models\Order::PICKED_UP         => ['icon' => '📦', 'anim' => 'track-pop'],
+                            \App\Models\Order::ON_THE_WAY        => ['icon' => '🛵', 'anim' => 'track-drive'],
+                            \App\Models\Order::DELIVERED         => ['icon' => '🎉', 'anim' => 'track-celebrate'],
+                        ];
+                        $current = $stepAnim[$order->status] ?? ['icon' => '🍽️', 'anim' => 'track-bob'];
+                    @endphp
+
+                    <div class="flex items-center gap-4 mb-6 bg-rose-50 dark:bg-rose-900/15 rounded-xl px-4 py-4 overflow-hidden">
+                        <span class="text-4xl shrink-0 inline-block" style="animation: {{ $current['anim'] }} 1.6s ease-in-out infinite;">{{ $current['icon'] }}</span>
+                        <div>
+                            <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $order->statusLabel() }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ $order->status === \App\Models\Order::DELIVERED ? 'Enjoy your meal!' : 'Hang tight — we\'ll keep this updated live.' }}
+                            </p>
+                        </div>
+                    </div>
+
                     {{-- Segmented horizontal progress line --}}
                     <div class="flex items-stretch gap-1.5 mb-4">
                         @foreach ($order->statusTimeline() as $step)
