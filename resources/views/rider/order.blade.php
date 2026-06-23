@@ -41,13 +41,23 @@
     <div class="grid lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
             <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
-                <h2 class="font-bold mb-3">Customer's delivery location</h2>
-                @include('partials.map-display', [
-                    'mapId' => 'customer-location-map',
-                    'lat' => $order->latitude,
-                    'lng' => $order->longitude,
-                    'markerLabel' => $order->address_line,
-                ])
+                <h2 class="font-bold mb-3">Delivery route</h2>
+                @php
+                    $routePoints = [];
+                    if ($riderLat && $riderLng) {
+                        $routePoints[] = ['lat' => (float) $riderLat, 'lng' => (float) $riderLng, 'label' => 'You (rider)', 'color' => '#2563eb'];
+                    }
+                    $routePoints[] = ['lat' => (float) $order->restaurant->latitude, 'lng' => (float) $order->restaurant->longitude, 'label' => $order->restaurant->name . ' — pickup', 'color' => '#ea580c'];
+                    $routePoints[] = ['lat' => (float) $order->latitude, 'lng' => (float) $order->longitude, 'label' => 'Customer — drop-off', 'color' => '#16a34a'];
+                @endphp
+                @include('partials.route-map', ['mapId' => 'delivery-route-map', 'points' => $routePoints])
+
+                <div class="flex items-center gap-4 mt-3 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full inline-block" style="background:#2563eb"></span> You</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full inline-block" style="background:#ea580c"></span> Restaurant (pickup)</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full inline-block" style="background:#16a34a"></span> Customer (drop-off)</span>
+                </div>
+
                 <div class="flex items-center justify-between mt-3 gap-3 flex-wrap">
                     <div>
                         <p class="text-sm text-gray-600 dark:text-gray-300">📍 {{ $order->address_line }}</p>
