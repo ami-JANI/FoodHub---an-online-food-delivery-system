@@ -28,6 +28,8 @@ class RiderDashboardController extends Controller
                 ->get()
                 ->map(function (Order $order) use ($riderLat, $riderLng) {
                     $order->pickup_distance_km = $order->pickupDistanceFromKm($riderLat, $riderLng);
+                    $order->route_distance_km = $order->routeDistanceKm($riderLat, $riderLng);
+                    $order->rider_earning = $order->riderEarning($riderLat, $riderLng);
 
                     return $order;
                 })
@@ -56,8 +58,15 @@ class RiderDashboardController extends Controller
     {
         $this->authorizeOrder($order);
 
+        /** @var Rider $rider */
+        $rider = Auth::guard('rider')->user();
+        $riderLat = Session::get('rider_lat') ?? $rider->last_latitude;
+        $riderLng = Session::get('rider_lng') ?? $rider->last_longitude;
+
         return view('rider.order', [
             'order' => $order->load('items', 'restaurant', 'messages'),
+            'riderLat' => $riderLat,
+            'riderLng' => $riderLng,
         ]);
     }
 
