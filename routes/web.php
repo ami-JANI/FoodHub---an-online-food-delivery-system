@@ -67,6 +67,7 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/order/{order}/confirmation', [CheckoutController::class, 'success'])->name('cart.success');
 
     Route::get('/track', [TrackOrderController::class, 'index'])->name('track.index');
+    Route::post('/track/{trackingCode}/cancel', [TrackOrderController::class, 'cancel'])->name('track.cancel');
 
     Route::get('/track/{trackingCode}/review', [ReviewController::class, 'create'])->name('reviews.create');
     Route::post('/track/{trackingCode}/review', [ReviewController::class, 'store'])->name('reviews.store');

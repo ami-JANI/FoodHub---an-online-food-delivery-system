@@ -58,6 +58,19 @@ class TrackOrderController extends Controller
         return back();
     }
 
+    public function cancel(string $trackingCode)
+    {
+        $order = Order::where('tracking_code', $trackingCode)->firstOrFail();
+
+        abort_unless(Auth::guard('web')->check() && Auth::guard('web')->id() === $order->user_id, 403);
+        abort_unless($order->canBeCancelledByCustomer(), 403, 'This order can no longer be cancelled.');
+
+        $order->update(['status' => Order::CANCELLED]);
+
+        return redirect()->route('track.show', $order->tracking_code)
+            ->with('status', 'Your order has been cancelled.');
+    }
+
     public function riderLocation(string $trackingCode)
     {
         $order = Order::where('tracking_code', $trackingCode)->with('rider')->firstOrFail();
