@@ -28,6 +28,9 @@ class Order extends Model
 
     public const CANCELLED = 'cancelled';
 
+    /** What a rider earns per kilometer of the delivery route. */
+    public const EARNING_RATE_PER_KM = 5.0;
+
     public const STEPS = [
         self::PLACED => 'Order placed',
         self::RESTAURANT_ACCEPTED => 'Restaurant accepted your order',
@@ -100,6 +103,41 @@ class Order extends Model
     public function pickupDistanceFromKm(?float $lat, ?float $lng): ?float
     {
         return $this->restaurant->distanceFromKm($lat, $lng);
+    }
+
+    /**
+     * The two delivery legs in km: rider → restaurant (pickup), then restaurant → customer (drop-off).
+     */
+    public function routeLegsKm(?float $riderLat, ?float $riderLng): array
+    {
+        return [
+            'to_restaurant' => $this->restaurant->distanceFromKm($riderLat, $riderLng),
+            'to_customer' => $this->restaurant->distanceFromKm($this->latitude, $this->longitude),
+        ];
+    }
+
+    /**
+     * Total route distance in km (both legs). Null when any coordinate is missing.
+     */
+    public function routeDistanceKm(?float $riderLat, ?float $riderLng): ?float
+    {
+        $legs = $this->routeLegsKm($riderLat, $riderLng);
+
+        if ($legs['to_restaurant'] === null || $legs['to_customer'] === null) {
+            return null;
+        }
+
+        return round($legs['to_restaurant'] + $legs['to_customer'], 2);
+    }
+
+    /**
+     * What the rider earns for this delivery: total route distance × the per-km rate.
+     */
+    public function riderEarning(?float $riderLat, ?float $riderLng): ?float
+    {
+        $distance = $this->routeDistanceKm($riderLat, $riderLng);
+
+        return $distance !== null ? round($distance * self::EARNING_RATE_PER_KM, 2) : null;
     }
 
     public function statusLabel(): string
