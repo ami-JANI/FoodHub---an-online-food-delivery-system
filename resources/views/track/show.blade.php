@@ -18,20 +18,39 @@
     <div class="grid lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
             <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
-                <h2 class="font-bold mb-4">Order status</h2>
-                <ol class="space-y-4">
-                    @foreach ($order->statusTimeline() as $step)
-                        <li class="flex items-start gap-3">
-                            <span class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
-                                {{ $step['complete'] ? 'bg-rose-950 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500' }}">
-                                {{ $step['complete'] ? '✓' : '' }}
-                            </span>
-                            <span class="text-sm {{ $step['current'] ? 'font-semibold text-gray-900 dark:text-gray-100' : ($step['complete'] ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500') }}">
-                                {{ $step['label'] }}
-                            </span>
-                        </li>
-                    @endforeach
-                </ol>
+                <h2 class="font-bold mb-5">Order status</h2>
+
+                @if ($order->isCancelled())
+                    <div class="flex items-start gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-xl px-4 py-3 text-sm">
+                        <span class="text-lg shrink-0">🚫</span>
+                        <p>This order was cancelled. No further updates will appear.</p>
+                    </div>
+                @else
+                    {{-- Segmented horizontal progress line --}}
+                    <div class="flex items-stretch gap-1.5 mb-4">
+                        @foreach ($order->statusTimeline() as $step)
+                            <div class="flex-1 h-2 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+                                <div class="h-full rounded-full transition-all duration-500
+                                    {{ $step['complete'] ? 'bg-rose-950 dark:bg-rose-700 w-full' : 'w-0' }}
+                                    {{ $step['current'] ? 'animate-pulse' : '' }}"></div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <ol class="grid grid-cols-2 sm:grid-cols-4 gap-x-3 gap-y-2">
+                        @foreach ($order->statusTimeline() as $step)
+                            <li class="flex items-center gap-2 text-xs">
+                                <span class="shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold
+                                    {{ $step['complete'] ? 'bg-rose-950 dark:bg-rose-700 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500' }}">
+                                    {{ $step['complete'] ? '✓' : '' }}
+                                </span>
+                                <span class="{{ $step['current'] ? 'font-semibold text-gray-900 dark:text-gray-100' : ($step['complete'] ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500') }}">
+                                    {{ $step['label'] }}
+                                </span>
+                            </li>
+                        @endforeach
+                    </ol>
+                @endif
             </div>
 
             @if ($isOwner && $order->status === \App\Models\Order::DELIVERED)
