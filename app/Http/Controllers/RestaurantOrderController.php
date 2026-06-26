@@ -22,7 +22,10 @@ class RestaurantOrderController extends Controller
         $this->authorizeOrder($order);
         abort_unless($order->status === Order::RESTAURANT_ACCEPTED, 409);
 
-        $order->update(['status' => Order::PREPARING]);
+        $order->update([
+            'status' => Order::PREPARING,
+            'preparing_at' => now(),
+        ]);
 
         return back()->with('status', "Order #{$order->id} is now being prepared.");
     }
