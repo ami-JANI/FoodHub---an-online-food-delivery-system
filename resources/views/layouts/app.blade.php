@@ -22,13 +22,13 @@
     {{-- Row 1: utility bar — scrolls away (not sticky) --}}
     <div class="bg-stone-900 text-stone-300 text-xs sm:text-sm">
         <div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2 sm:gap-4">
-            <button type="button" id="location-pill" class="flex items-center gap-1.5 hover:text-white transition min-w-0 {{ $hasLocation ? '' : 'cursor-pointer' }}">
+            <a href="{{ route('location.set') }}" id="location-pill" class="flex items-center gap-1.5 hover:text-white transition min-w-0 cursor-pointer" title="Set your delivery location">
                 <span class="shrink-0">📍</span>
                 <span id="location-text" class="truncate max-w-[32vw] sm:max-w-xs">
-                    {{ $hasLocation ? 'Detecting your location…' : 'Enter your location' }}
+                    {{ $hasLocation ? 'Detecting your location…' : 'Set your location' }}
                 </span>
                 <span class="shrink-0">▾</span>
-            </button>
+            </a>
             <div class="flex items-center gap-3 shrink-0">
                 <a href="{{ route('track.index') }}" class="hover:text-white transition whitespace-nowrap">Track Order</a>
                 <span class="w-px h-4 bg-stone-700"></span>
@@ -111,7 +111,7 @@
 
         @hasSection('filterbar')
             <div class="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-                <div class="max-w-6xl mx-auto px-4 py-2.5 overflow-x-auto">
+                <div class="max-w-6xl mx-auto px-4 py-2.5">
                     @yield('filterbar')
                 </div>
             </div>
@@ -135,6 +135,7 @@
             var hasLocation = @json($hasLocation);
             var lat = @json(session('user_lat'));
             var lng = @json(session('user_lng'));
+            var manualLabel = @json(session('user_location_label'));
 
             function requestLocation() {
                 if (!navigator.geolocation) {
@@ -167,7 +168,10 @@
                 );
             }
 
-            if (hasLocation && lat !== null && lng !== null) {
+            if (manualLabel) {
+                // A location the user set manually — show their own label, no geocoding.
+                textEl.textContent = manualLabel;
+            } else if (hasLocation && lat !== null && lng !== null) {
                 var cacheKey = 'locationName:' + lat.toFixed(3) + ',' + lng.toFixed(3);
                 var cached = sessionStorage.getItem(cacheKey);
 
@@ -191,7 +195,8 @@
                         });
                 }
             } else {
-                pill.addEventListener('click', requestLocation);
+                // No location yet — try auto-detect in the background. The pill itself
+                // links to the manual set-location page if the user prefers to choose.
                 requestLocation();
             }
         })();
