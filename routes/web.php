@@ -30,6 +30,8 @@ Route::get('/restaurants/{slug}', [RestaurantController::class, 'show'])->name('
 
 Route::post('/location', [LocationController::class, 'update'])->name('location.update');
 Route::delete('/location', [LocationController::class, 'clear'])->name('location.clear');
+Route::get('/location/set', [LocationController::class, 'showManual'])->name('location.set');
+Route::post('/location/set', [LocationController::class, 'setManual'])->name('location.set.store');
 
 Route::get('/track/{trackingCode}', [TrackOrderController::class, 'show'])->name('track.show');
 Route::get('/track/{trackingCode}/rider-location', [TrackOrderController::class, 'riderLocation'])->name('track.rider-location');
