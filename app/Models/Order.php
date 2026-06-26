@@ -31,6 +31,12 @@ class Order extends Model
     /** What a rider earns per kilometer of the delivery route. */
     public const EARNING_RATE_PER_KM = 5.0;
 
+    /** Minutes an order waits for a rider to accept before it is auto-cancelled. */
+    public const RIDER_SEARCH_TIMEOUT_MINUTES = 15;
+
+    /** Cancellation reason shown when no rider accepts the order in time. */
+    public const NO_RIDER_REASON = 'No rider found currently to deliver your order, so it was cancelled.';
+
     public const STEPS = [
         self::PLACED => 'Order placed',
         self::RESTAURANT_ACCEPTED => 'Restaurant accepted your order',
@@ -44,8 +50,8 @@ class Order extends Model
 
     protected $fillable = [
         'user_id', 'restaurant_id', 'rider_id', 'tracking_code', 'address_line', 'phone',
-        'latitude', 'longitude', 'subtotal', 'delivery_fee', 'total', 'status',
-        'accepted_at', 'delivered_at',
+        'latitude', 'longitude', 'subtotal', 'delivery_fee', 'total', 'status', 'cancellation_reason',
+        'accepted_at', 'preparing_at', 'delivered_at',
     ];
 
     protected function casts(): array
@@ -54,6 +60,7 @@ class Order extends Model
             'latitude' => 'float',
             'longitude' => 'float',
             'accepted_at' => 'datetime',
+            'preparing_at' => 'datetime',
             'delivered_at' => 'datetime',
         ];
     }
@@ -160,6 +167,28 @@ class Order extends Model
     public function canBeCancelledByCustomer(): bool
     {
         return in_array($this->status, [self::PLACED, self::RESTAURANT_ACCEPTED], true);
+    }
+
+    /**
+     * Auto-cancel an order that has been waiting for a rider too long with none assigned.
+     * Returns true if it was cancelled by this call.
+     */
+    public function autoCancelIfNoRider(): bool
+    {
+        if ($this->status !== self::PREPARING || $this->rider_id !== null || ! $this->preparing_at) {
+            return false;
+        }
+
+        if ($this->preparing_at->diffInMinutes(now()) < self::RIDER_SEARCH_TIMEOUT_MINUTES) {
+            return false;
+        }
+
+        $this->update([
+            'status' => self::CANCELLED,
+            'cancellation_reason' => self::NO_RIDER_REASON,
+        ]);
+
+        return true;
     }
 
     /**
