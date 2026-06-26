@@ -25,6 +25,25 @@
                     @endif
 
                     <div class="space-y-2.5">
+                        @if ($setLocation)
+                            <label class="flex items-start gap-3 border border-gray-200 dark:border-gray-700 rounded-lg p-3 cursor-pointer hover:border-rose-400 transition">
+                                <input type="radio" name="address_choice" value="set_location"
+                                    {{ $addresses->isEmpty() ? 'checked' : '' }}
+                                    class="address-choice-radio mt-1" id="set-location-radio">
+                                <div class="min-w-0">
+                                    <p class="font-semibold text-sm">📍 My set location</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">{{ $setLocation['label'] }}</p>
+                                    <a href="{{ route('location.set') }}" class="text-xs text-rose-800 dark:text-rose-400 hover:underline">Change location</a>
+                                </div>
+                            </label>
+
+                            <div id="set-location-phone" class="pl-7 {{ $addresses->isEmpty() ? '' : 'hidden' }}">
+                                <label class="text-sm font-medium">Phone number</label>
+                                <input type="text" name="set_location_phone" value="{{ old('phone') }}" placeholder="01XXXXXXXXX"
+                                    class="w-full mt-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-800 focus:border-rose-800 transition">
+                            </div>
+                        @endif
+
                         @foreach ($addresses as $address)
                             <label class="flex items-start gap-3 border border-gray-200 dark:border-gray-700 rounded-lg p-3 cursor-pointer hover:border-rose-400 transition">
                                 <input type="radio" name="address_choice" value="{{ $address->id }}"
@@ -109,10 +128,14 @@
         (function () {
             var radios = document.querySelectorAll('.address-choice-radio');
             var newFields = document.getElementById('new-address-fields');
+            var setLocationPhone = document.getElementById('set-location-phone');
 
             function toggleNewFields() {
                 var selected = document.querySelector('.address-choice-radio:checked');
                 newFields.classList.toggle('hidden', !selected || selected.value !== 'new');
+                if (setLocationPhone) {
+                    setLocationPhone.classList.toggle('hidden', !selected || selected.value !== 'set_location');
+                }
             }
 
             radios.forEach(function (radio) {
@@ -121,12 +144,16 @@
             toggleNewFields();
 
             var savedAddresses = @json($addresses->map(fn ($a) => ['id' => $a->id, 'line' => $a->address_line, 'phone' => $a->phone]));
+            var setLocationLabel = @json($setLocation['label'] ?? null);
 
             document.getElementById('checkout-form').addEventListener('submit', function (event) {
                 var selected = document.querySelector('.address-choice-radio:checked');
                 var addressText, phoneText;
 
-                if (selected && selected.value !== 'new') {
+                if (selected && selected.value === 'set_location') {
+                    addressText = setLocationLabel || 'Pinned location';
+                    phoneText = document.querySelector('[name="set_location_phone"]').value;
+                } else if (selected && selected.value !== 'new') {
                     var match = savedAddresses.find(function (a) { return String(a.id) === selected.value; });
                     addressText = match ? match.line : '';
                     phoneText = match ? match.phone : '';

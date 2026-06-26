@@ -38,6 +38,11 @@ class CheckoutController extends Controller
             'deliveryFee' => $deliveryFee,
             'restaurant' => $restaurant,
             'addresses' => $user->addresses,
+            'setLocation' => Session::get('user_lat') !== null && Session::get('user_lng') !== null ? [
+                'lat' => Session::get('user_lat'),
+                'lng' => Session::get('user_lng'),
+                'label' => Session::get('user_location_label') ?: 'Pinned location',
+            ] : null,
         ]);
     }
 
@@ -56,6 +61,22 @@ class CheckoutController extends Controller
         }
 
         $user = Auth::guard('web')->user();
+
+        // Deliver to the location the customer set manually on the map.
+        if ($request->input('address_choice') === 'set_location') {
+            abort_unless(Session::get('user_lat') !== null && Session::get('user_lng') !== null, 422, 'No location has been set.');
+
+            $validated = $request->validate([
+                'set_location_phone' => ['required', 'string', 'max:30'],
+            ]);
+
+            $addressLine = Session::get('user_location_label') ?: 'Pinned location';
+            $phone = $validated['set_location_phone'];
+            $latitude = Session::get('user_lat');
+            $longitude = Session::get('user_lng');
+
+            return $this->placeOrder($user, $restaurant, $addressLine, $phone, $latitude, $longitude, $total, $items);
+        }
 
         $request->merge([
             'address_id' => $request->input('address_choice') !== 'new' ? $request->input('address_choice') : null,
@@ -94,6 +115,11 @@ class CheckoutController extends Controller
             }
         }
 
+        return $this->placeOrder($user, $restaurant, $addressLine, $phone, $latitude, $longitude, $total, $items);
+    }
+
+    private function placeOrder($user, $restaurant, $addressLine, $phone, $latitude, $longitude, $total, array $items)
+    {
         $deliveryFee = $restaurant->deliveryFeeFor($latitude, $longitude);
 
         $order = DB::transaction(function () use ($user, $restaurant, $addressLine, $phone, $latitude, $longitude, $total, $deliveryFee, $items) {
