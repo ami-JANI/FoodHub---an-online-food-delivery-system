@@ -38,7 +38,7 @@
                 @if ($order->isCancelled())
                     <div class="flex items-start gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 rounded-xl px-4 py-3 text-sm">
                         <span class="text-lg shrink-0">🚫</span>
-                        <p>This order was cancelled. No further updates will appear.</p>
+                        <p>{{ $order->cancellation_reason ?: 'This order was cancelled. No further updates will appear.' }}</p>
                     </div>
                 @else
                     @php
