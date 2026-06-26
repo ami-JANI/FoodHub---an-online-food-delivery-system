@@ -92,7 +92,8 @@ class RestaurantController extends Controller
     {
         $restaurant = Restaurant::where('slug', $slug)
             ->with(['categories.menuItems' => function ($query) {
-                $query->where('is_approved', true)->where('is_available', true);
+                // Unavailable items are still shown (faded) so customers can see the full menu.
+                $query->where('is_approved', true);
             }, 'reviews.user'])
             ->firstOrFail();
 

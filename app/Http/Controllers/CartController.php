@@ -47,6 +47,10 @@ class CartController extends Controller
             return back()->withErrors(['cart' => 'This restaurant is currently unavailable, so this item cannot be added to your cart.']);
         }
 
+        if (! $menuItem->is_available) {
+            return back()->withErrors(['cart' => "\"{$menuItem->name}\" is currently unavailable and cannot be added to your cart."]);
+        }
+
         $cart = Session::get('cart', []);
 
         $currentRestaurantId = $this->cartRestaurantId($cart);

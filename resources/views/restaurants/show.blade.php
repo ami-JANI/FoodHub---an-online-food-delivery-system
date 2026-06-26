@@ -127,32 +127,48 @@
         <h2 id="category-{{ $category->id }}" class="text-lg font-bold mb-3 mt-8 scroll-mt-32">{{ $category->name }}</h2>
         <div class="grid sm:grid-cols-2 gap-3">
             @foreach ($category->menuItems as $item)
-                <div class="group bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition p-4 flex items-center gap-4">
-                    <div class="w-16 h-16 shrink-0 rounded-lg bg-gradient-to-br from-stone-200 to-amber-100 dark:from-stone-800 dark:to-stone-700 flex items-center justify-center text-2xl overflow-hidden">
+                @php($canOrder = $open && $item->is_available)
+                <div class="group bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition p-4 flex items-center gap-4 {{ $item->is_available ? '' : 'opacity-60' }}">
+                    <div class="w-16 h-16 shrink-0 rounded-lg bg-gradient-to-br from-stone-200 to-amber-100 dark:from-stone-800 dark:to-stone-700 flex items-center justify-center text-2xl overflow-hidden relative">
                         @if ($item->image)
                             <img src="{{ asset('uploads/' . $item->image) }}" alt="{{ $item->name }}" class="w-full h-full object-cover">
                         @else
                             🍲
                         @endif
+                        @unless ($item->is_available)
+                            <div class="absolute inset-0 bg-black/55 flex items-center justify-center text-center p-1">
+                                <span class="text-[9px] font-bold text-white leading-tight">Currently unavailable</span>
+                            </div>
+                        @endunless
                     </div>
                     <div class="flex-1 min-w-0">
                         <h3 class="font-semibold truncate">{{ $item->name }}</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{{ $item->description }}</p>
                         <p class="text-sm font-bold mt-1 text-gray-800 dark:text-gray-200">Tk {{ number_format($item->price, 0) }}</p>
+                        @unless ($item->is_available)
+                            <span class="text-[10px] font-bold uppercase bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded">Currently unavailable</span>
+                        @endunless
                     </div>
-                    <form action="{{ route('cart.add', $item->id) }}" method="POST"
-                        @class(['shrink-0', 'cart-conflict-form' => $cartConflict, 'closed-restaurant-form' => ! $open])
-                        @if ($cartConflict)
-                            data-conflict-restaurant="{{ $cartConflict->name }}"
-                            data-target-restaurant="{{ $restaurant->name }}"
-                        @endif
-                    >
-                        @csrf
-                        <button type="submit"
-                            class="text-white text-sm font-semibold px-3.5 py-2 rounded-full whitespace-nowrap transition {{ $open ? 'bg-rose-950 group-hover:bg-rose-900' : 'bg-gray-400 cursor-not-allowed' }}">
+                    @if ($item->is_available)
+                        <form action="{{ route('cart.add', $item->id) }}" method="POST"
+                            @class(['shrink-0', 'cart-conflict-form' => $cartConflict, 'closed-restaurant-form' => ! $open])
+                            @if ($cartConflict)
+                                data-conflict-restaurant="{{ $cartConflict->name }}"
+                                data-target-restaurant="{{ $restaurant->name }}"
+                            @endif
+                        >
+                            @csrf
+                            <button type="submit"
+                                class="text-white text-sm font-semibold px-3.5 py-2 rounded-full whitespace-nowrap transition {{ $canOrder ? 'bg-rose-950 group-hover:bg-rose-900' : 'bg-gray-400 cursor-not-allowed' }}">
+                                + Add
+                            </button>
+                        </form>
+                    @else
+                        <button type="button" disabled
+                            class="shrink-0 text-white text-sm font-semibold px-3.5 py-2 rounded-full whitespace-nowrap bg-gray-400 cursor-not-allowed">
                             + Add
                         </button>
-                    </form>
+                    @endif
                 </div>
             @endforeach
         </div>
