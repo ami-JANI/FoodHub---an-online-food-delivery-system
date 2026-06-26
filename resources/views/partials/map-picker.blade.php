@@ -80,6 +80,9 @@
             setPin(event.latlng.lat, event.latlng.lng, 16);
         });
 
+        // Expose the pin setter so external controls (e.g. a place search) can move it.
+        window[mapId + '_setPin'] = setPin;
+
         document.getElementById(mapId + '-locate-btn').addEventListener('click', function () {
             requestCurrentLocation();
         });
