@@ -183,7 +183,13 @@
             <h3 class="text-sm font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2 mt-5">{{ $category->name }}</h3>
             <div class="grid sm:grid-cols-2 gap-3">
                 @foreach ($category->menuItems as $item)
-                    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 flex items-center gap-3">
+                    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 flex items-center gap-3 {{ $item->is_available ? '' : 'opacity-60' }}">
+                        <form action="{{ route('restaurant.menu-items.toggle-availability', $item) }}" method="POST" class="shrink-0" title="{{ $item->is_available ? 'Available — uncheck to mark unavailable' : 'Unavailable — check to make available' }}">
+                            @csrf
+                            @method('PATCH')
+                            <input type="checkbox" onchange="this.form.submit()" {{ $item->is_available ? 'checked' : '' }}
+                                class="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-green-600 focus:ring-green-500 cursor-pointer">
+                        </form>
                         <div class="w-12 h-12 shrink-0 rounded-lg bg-gradient-to-br from-stone-200 to-amber-100 dark:from-stone-800 dark:to-stone-700 flex items-center justify-center text-xl overflow-hidden">
                             @if ($item->image)
                                 <img src="{{ asset('uploads/' . $item->image) }}" alt="{{ $item->name }}" class="w-full h-full object-cover">
@@ -194,9 +200,14 @@
                         <div class="flex-1 min-w-0">
                             <p class="font-medium truncate">{{ $item->name }}</p>
                             <p class="text-sm font-bold text-gray-800 dark:text-gray-200">Tk {{ number_format($item->price, 0) }}</p>
-                            @unless ($item->is_approved)
-                                <span class="text-[10px] font-bold uppercase bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded">Pending approval</span>
-                            @endunless
+                            <div class="flex items-center gap-1.5 flex-wrap mt-0.5">
+                                @unless ($item->is_approved)
+                                    <span class="text-[10px] font-bold uppercase bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded">Pending approval</span>
+                                @endunless
+                                @unless ($item->is_available)
+                                    <span class="text-[10px] font-bold uppercase bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded">Unavailable</span>
+                                @endunless
+                            </div>
                         </div>
                         <a href="{{ route('restaurant.menu-items.edit', $item) }}" class="text-xs font-semibold text-rose-800 dark:text-rose-400 hover:underline shrink-0">Edit</a>
                     </div>
