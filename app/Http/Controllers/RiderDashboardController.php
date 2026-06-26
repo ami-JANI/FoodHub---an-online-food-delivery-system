@@ -26,6 +26,7 @@ class RiderDashboardController extends Controller
                 ->where('status', Order::PREPARING)
                 ->with('restaurant', 'items')
                 ->get()
+                ->reject(fn (Order $order) => $order->autoCancelIfNoRider())
                 ->map(function (Order $order) use ($riderLat, $riderLng) {
                     $order->pickup_distance_km = $order->pickupDistanceFromKm($riderLat, $riderLng);
                     $order->route_distance_km = $order->routeDistanceKm($riderLat, $riderLng);

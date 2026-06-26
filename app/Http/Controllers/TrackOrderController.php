@@ -17,6 +17,8 @@ class TrackOrderController extends Controller
             ->with('restaurant', 'rider')
             ->get();
 
+        $runningOrders->each->autoCancelIfNoRider();
+
         $pastOrders = $user->orders()
             ->where('status', Order::DELIVERED)
             ->with('restaurant')
@@ -31,6 +33,8 @@ class TrackOrderController extends Controller
         $order = Order::where('tracking_code', $trackingCode)
             ->with('items', 'restaurant', 'rider', 'messages', 'review')
             ->firstOrFail();
+
+        $order->autoCancelIfNoRider();
 
         $isOwner = Auth::guard('web')->check() && Auth::guard('web')->id() === $order->user_id;
 
