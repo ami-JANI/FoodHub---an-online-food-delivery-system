@@ -80,6 +80,18 @@ class MenuItemDashboardController extends Controller
             ->with('status', "\"{$menuItem->name}\" was updated and is pending admin approval before it goes live again.");
     }
 
+    public function toggleAvailability(MenuItem $menuItem)
+    {
+        $this->authorizeItem($menuItem);
+
+        // Availability is an operational toggle — it takes effect immediately, no admin approval.
+        $menuItem->update(['is_available' => ! $menuItem->is_available]);
+
+        return back()->with('status', $menuItem->is_available
+            ? "\"{$menuItem->name}\" is now available."
+            : "\"{$menuItem->name}\" is now marked unavailable.");
+    }
+
     private function validateData(Request $request): array
     {
         return $request->validate([

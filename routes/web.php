@@ -92,6 +92,7 @@ Route::prefix('restaurant')->name('restaurant.')->group(function () {
         Route::post('/menu-items', [MenuItemDashboardController::class, 'store'])->name('menu-items.store');
         Route::get('/menu-items/{menuItem}/edit', [MenuItemDashboardController::class, 'edit'])->name('menu-items.edit');
         Route::put('/menu-items/{menuItem}', [MenuItemDashboardController::class, 'update'])->name('menu-items.update');
+        Route::patch('/menu-items/{menuItem}/availability', [MenuItemDashboardController::class, 'toggleAvailability'])->name('menu-items.toggle-availability');
 
         Route::get('/profile/edit', [RestaurantProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [RestaurantProfileController::class, 'update'])->name('profile.update');
