@@ -107,7 +107,12 @@
                 <input type="time" name="closing_time" value="{{ substr($restaurant->closing_time ?? '22:00', 0, 5) }}" required
                     class="block mt-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-rose-800 focus:border-rose-800 transition">
             </div>
-            <button type="submit" class="text-sm font-semibold bg-rose-950 hover:bg-rose-900 text-white px-3.5 py-2 rounded-full transition">Save hours</button>
+            <div>
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Estimated delivery time</label>
+                <input type="text" name="delivery_time" value="{{ $restaurant->delivery_time }}" required placeholder="e.g. 30-40 min"
+                    class="block mt-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-1.5 text-sm w-36 focus:outline-none focus:ring-2 focus:ring-rose-800 focus:border-rose-800 transition">
+            </div>
+            <button type="submit" class="text-sm font-semibold bg-rose-950 hover:bg-rose-900 text-white px-3.5 py-2 rounded-full transition">Save settings</button>
         </form>
 
         <form action="{{ route('restaurant.toggle-closed') }}" method="POST">

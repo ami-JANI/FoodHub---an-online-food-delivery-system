@@ -12,14 +12,16 @@ class RestaurantHoursController extends Controller
         $data = $request->validate([
             'opening_time' => ['required', 'date_format:H:i'],
             'closing_time' => ['required', 'date_format:H:i'],
+            'delivery_time' => ['required', 'string', 'max:50'],
         ]);
 
         Auth::guard('restaurant')->user()->update([
             'opening_time' => $data['opening_time'],
             'closing_time' => $data['closing_time'],
+            'delivery_time' => $data['delivery_time'],
         ]);
 
-        return back()->with('status', 'Store hours updated.');
+        return back()->with('status', 'Store settings updated.');
     }
 
     public function toggleClosed()
