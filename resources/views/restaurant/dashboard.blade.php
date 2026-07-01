@@ -54,6 +54,22 @@
         </div>
     @endif
 
+    @if ($adminCancelledOrders->isNotEmpty())
+        <div class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-4">
+            <div class="flex items-start gap-3 mb-2">
+                <span class="text-lg shrink-0">⚠️</span>
+                <p class="font-semibold text-red-800 dark:text-red-300 text-sm">Orders cancelled by FoodHub</p>
+            </div>
+            <ul class="space-y-1.5 pl-1">
+                @foreach ($adminCancelledOrders as $cancelled)
+                    <li class="text-sm text-red-700 dark:text-red-400">
+                        <span class="font-semibold">Order #{{ $cancelled->id }}</span> ({{ $cancelled->created_at->format('d M, h:i A') }}) — {{ \App\Models\Order::ADMIN_CANCEL_PARTNER_MESSAGE }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     @if ($restaurant->adminEdits->isNotEmpty())
         <div class="mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl px-4 py-4">
             <div class="flex items-start gap-3 mb-2">

@@ -19,11 +19,18 @@ class RestaurantDashboardController extends Controller
             ->latest()
             ->get();
 
+        $adminCancelledOrders = Order::where('restaurant_id', $restaurant->id)
+            ->where('status', Order::CANCELLED)
+            ->where('cancelled_by', 'admin')
+            ->latest()
+            ->take(5)
+            ->get();
+
         // Mark admin-edit notices as seen so the unseen highlight clears on next load.
         $restaurant->adminEdits()->where('seen_by_restaurant', false)->update(['seen_by_restaurant' => true]);
 
         $adminEmail = Admin::value('email') ?? 'admin@foodhub.test';
 
-        return view('restaurant.dashboard', compact('restaurant', 'pendingUpdateRequest', 'incomingOrders', 'adminEmail'));
+        return view('restaurant.dashboard', compact('restaurant', 'pendingUpdateRequest', 'incomingOrders', 'adminCancelledOrders', 'adminEmail'));
     }
 }
