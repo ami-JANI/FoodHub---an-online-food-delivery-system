@@ -3,6 +3,7 @@
 @section('title', 'Admin Dashboard - FoodHub')
 
 @section('header-actions')
+    <a href="{{ route('admin.orders.index') }}" class="text-sm font-medium bg-white/10 hover:bg-white/20 transition px-3.5 py-1.5 rounded-full">All orders</a>
     <form action="{{ route('admin.logout') }}" method="POST">
         @csrf
         <button type="submit" class="text-sm font-medium bg-white/10 hover:bg-white/20 transition px-3.5 py-1.5 rounded-full">Logout</button>
