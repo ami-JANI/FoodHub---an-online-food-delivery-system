@@ -46,12 +46,21 @@ class RiderDashboardController extends Controller
 
         $pastDeliveries = $rider->orders()->where('status', Order::DELIVERED)->with('restaurant')->take(10)->get();
 
+        $adminCancelledOrders = $rider->orders()
+            ->where('status', Order::CANCELLED)
+            ->where('cancelled_by', 'admin')
+            ->with('restaurant')
+            ->latest()
+            ->take(5)
+            ->get();
+
         return view('rider.dashboard', [
             'rider' => $rider,
             'hasLocation' => $hasLocation,
             'nearbyOrders' => $nearbyOrders,
             'activeDeliveries' => $activeDeliveries,
             'pastDeliveries' => $pastDeliveries,
+            'adminCancelledOrders' => $adminCancelledOrders,
         ]);
     }
 

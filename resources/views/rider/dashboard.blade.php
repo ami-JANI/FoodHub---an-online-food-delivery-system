@@ -17,6 +17,22 @@
         </div>
     @endunless
 
+    @if ($adminCancelledOrders->isNotEmpty())
+        <div class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-4">
+            <div class="flex items-start gap-3 mb-2">
+                <span class="text-lg shrink-0">⚠️</span>
+                <p class="font-semibold text-red-800 dark:text-red-300 text-sm">Deliveries cancelled by FoodHub</p>
+            </div>
+            <ul class="space-y-1.5 pl-1">
+                @foreach ($adminCancelledOrders as $cancelled)
+                    <li class="text-sm text-red-700 dark:text-red-400">
+                        <span class="font-semibold">Order #{{ $cancelled->id }}</span> ({{ $cancelled->restaurant->name }}, {{ $cancelled->created_at->format('d M, h:i A') }}) — {{ \App\Models\Order::ADMIN_CANCEL_PARTNER_MESSAGE }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="mb-6 flex items-center justify-between flex-wrap gap-3">
         <div>
             <h1 class="text-2xl font-bold">Hi, {{ $rider->name }}</h1>
