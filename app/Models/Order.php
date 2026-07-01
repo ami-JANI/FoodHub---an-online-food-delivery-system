@@ -37,6 +37,12 @@ class Order extends Model
     /** Cancellation reason shown when no rider accepts the order in time. */
     public const NO_RIDER_REASON = 'No rider found currently to deliver your order, so it was cancelled.';
 
+    /** Message the customer sees when an admin cancels their order. */
+    public const ADMIN_CANCEL_CUSTOMER_MESSAGE = 'Something went wrong with this order. Please contact our support team for help.';
+
+    /** Message a restaurant or rider sees when an admin cancels the order. */
+    public const ADMIN_CANCEL_PARTNER_MESSAGE = 'This order was cancelled because the customer violated our company policy.';
+
     public const STEPS = [
         self::PLACED => 'Order placed',
         self::RESTAURANT_ACCEPTED => 'Restaurant accepted your order',
@@ -50,7 +56,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id', 'restaurant_id', 'rider_id', 'tracking_code', 'address_line', 'phone',
-        'latitude', 'longitude', 'subtotal', 'delivery_fee', 'total', 'status', 'cancellation_reason',
+        'latitude', 'longitude', 'subtotal', 'delivery_fee', 'total', 'status', 'cancellation_reason', 'cancelled_by',
         'accepted_at', 'preparing_at', 'delivered_at',
     ];
 
@@ -159,6 +165,28 @@ class Order extends Model
     public function isCancelled(): bool
     {
         return $this->status === self::CANCELLED;
+    }
+
+    public function wasCancelledByAdmin(): bool
+    {
+        return $this->status === self::CANCELLED && $this->cancelled_by === 'admin';
+    }
+
+    /**
+     * The cancellation notice shown to a restaurant/rider (partner side).
+     */
+    public function partnerCancellationNotice(): ?string
+    {
+        if (! $this->isCancelled()) {
+            return null;
+        }
+
+        return $this->wasCancelledByAdmin() ? self::ADMIN_CANCEL_PARTNER_MESSAGE : 'This order was cancelled.';
+    }
+
+    public function isOngoing(): bool
+    {
+        return ! in_array($this->status, [self::DELIVERED, self::CANCELLED], true);
     }
 
     /**
