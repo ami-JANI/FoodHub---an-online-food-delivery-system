@@ -34,7 +34,7 @@
     </main>
 
     <footer class="text-center text-xs text-gray-400 dark:text-gray-600 py-8">
-        FoodHub &middot; Web Lab Project
+        &copy; {{ date('Y') }} FoodHub. All rights reserved.
     </footer>
 </body>
 </html>

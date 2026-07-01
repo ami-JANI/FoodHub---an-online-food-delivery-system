@@ -213,18 +213,18 @@
                 <ul class="space-y-1 text-stone-500">
                     <li><a href="{{ route('home') }}" class="hover:text-white transition">Restaurants</a></li>
                     <li><a href="{{ route('restaurant.register') }}" class="hover:text-white transition">Become a partner</a></li>
-                    <li><a href="{{ route('rider.register') }}" class="hover:text-white transition">🛵 Become a rider</a></li>
+                    <li><a href="{{ route('rider.register') }}" class="hover:text-white transition">Become a rider</a></li>
                     <li><a href="{{ route('rider.login') }}" class="hover:text-white transition">Rider sign in</a></li>
                     <li><a href="{{ route('admin.login') }}" class="hover:text-white transition">Admin</a></li>
                 </ul>
             </div>
             <div>
-                <p class="text-white font-semibold mb-2">Web Lab Project</p>
-                <p class="text-stone-500">Built with Laravel &amp; Tailwind CSS as a university Web Lab assignment.</p>
+                <p class="text-white font-semibold mb-2">Get in touch</p>
+                <p class="text-stone-500">Questions or feedback? Reach us at support@foodhub.com — we're here to help.</p>
             </div>
         </div>
         <div class="border-t border-stone-800 text-center text-xs text-stone-500 py-4">
-            &copy; {{ date('Y') }} FoodHub &middot; Web Lab Project
+            &copy; {{ date('Y') }} FoodHub. All rights reserved.
         </div>
     </footer>
 </body>
